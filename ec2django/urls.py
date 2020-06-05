@@ -20,6 +20,7 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
-   url(r'^admin/', admin.site.urls),
    url(r'^', include('helloworld.urls')),
+   url(r'greevil/', include('greevil.urls')),
+   url(r'^admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

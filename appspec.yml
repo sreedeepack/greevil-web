@@ -5,6 +5,8 @@ files:
    destination: /home/ec2-user/ec2django
  - source: /helloworld/
    destination: /home/ec2-user/helloworld
+ - source: /greevil/
+   destination: /home/ec2-user/greevil
  - source: /manage.py
    destination: /home/ec2-user
  - source: /supervisord.conf
