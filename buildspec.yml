@@ -24,6 +24,7 @@ artifacts:
     - 'template.yml'
     - 'ec2django/**/*'
     - 'helloworld/**/*'
+    - 'greevil/**/*'
     - 'scripts/**/*'
     - 'appspec.yml'
     - 'manage.py'

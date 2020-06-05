@@ -1,0 +1,245 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Greevil- Login</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="{% static "vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this template-->
+  <link href="{% static "css/sb-admin.css" %}" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark">
+
+  <div class="container">
+    <div class="card card-login mx-auto mt-5">
+      <div class="card-header">Login</div>
+      <div class="card-body">
+        <form id="loginForm">
+          <div class="form-group">
+            <div class="form-label-group">
+              <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="required" autofocus="autofocus">
+              <label for="inputEmail">Email address</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-label-group">
+              <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="required">
+              <label for="inputPassword">Password</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" value="remember-me">
+                Remember Password
+              </label>
+            </div>
+          </div>
+          
+          <input type="submit" class="btn btn-block btn-primary" value="Login">
+          
+        </form>
+        <div class="text-center">
+          <a class="d-block small mt-3" href="{% url "sb_admin_register" %}">Register an Account</a>
+          <a class="d-block small" href="{% url "sb_admin_forgot_password" %}">Forgot Password?</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
+  <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
+  <!-- Cognito -->
+  <script src="{%static "js/aws-cognito-sdk.min.js" %}"></script>
+  <script src="{%static "js/amazon-cognito-identity.min.js" %}"></script>
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.135.0.min.js"></script>
+
+</body>
+
+<!-- Cognito -->
+<script>
+    
+  var cognitoUserPoolId = "us-east-1_RthhXV3XY";
+  var cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
+  var awsRegion = 'us-east-1';
+  initializeStorage();
+
+  var configString = localStorage.getItem("awsConfig");
+  var config = JSON.parse(configString);
+  if(config != null) {
+    refreshAWSCredentials();
+    loggedInDisplay();
+  }
+
+  function loggedInDisplay() {
+    // $("#loginModal").modal("hide");
+    // $("#logInButton").addClass("d-none");
+    // $("#logOutButton").removeClass("d-none");
+    window.location.replace("/greevil/dashboard")
+  }
+
+  function initializeStorage() {
+    var identityPoolId = cognitoUserPoolId;//
+    var userPoolId = cognitoUserPoolId; //
+    var clientId = cognitoUserPoolClientId;//
+    var loginPrefix = 'cognito-idp.' + awsRegion + '.amazonaws.com/' + identityPoolId;
+
+    localStorage.setItem('identityPoolId', identityPoolId);
+    localStorage.setItem('userPoolId', userPoolId);
+    localStorage.setItem('clientId', clientId);
+    localStorage.setItem('loginPrefix', loginPrefix);
+  }
+
+
+  $(document).on('click', '#logOutButton', function(event) {
+    localStorage.clear();
+    document.location.reload();
+  });
+
+
+    function loginUser() {
+
+      var userPoolId = localStorage.getItem('userPoolId');
+      var clientId = localStorage.getItem('clientId');
+      var identityPoolId = localStorage.getItem('identityPoolId');
+      var loginPrefix = localStorage.getItem('loginPrefix');
+
+      var poolData = {
+        UserPoolId : userPoolId, // Your user pool id here
+        ClientId : clientId // Your client id here
+      };
+      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+      var email = document.getElementById('inputEmail').value;
+      var pwd = document.getElementById('inputPassword').value;
+
+      var authenticationData =
+      {
+        'UserName': email,
+        'Password': pwd
+      }
+      var userData = {
+        Username : email,
+        Pool : userPool
+      };
+
+      var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
+      var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+      cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: function (result) {
+          console.log('access token + \n' + result.getAccessToken().getJwtToken());
+
+          var sessionTokens =
+          {
+            IdToken: result.getIdToken(),
+            AccessToken: result.getAccessToken(),
+            RefreshToken: result.getRefreshToken()
+          };
+          localStorage.setItem('sessionTokens', JSON.stringify(sessionTokens));
+
+          //POTENTIAL: Region needs to be set if not already set previously elsewhere.
+          AWS.config.region =  awsRegion; 
+
+          AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+            IdentityPoolId : identityPoolId, // your identity pool id here
+            Logins : { 
+              // Change the key below according to the specific region your user pool is in.
+               loginPrefix : sessionTokens.IdToken.jwtToken
+            }
+          });
+
+          localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
+          localStorage.setItem('email', email);
+
+          cognitoUser.getUserAttributes(function(err, result) {
+            if (err) {
+                // alert(err);
+                return;
+            }
+            for (i = 0; i < result.length; i++) {
+                console.log('attribute ' + result[i].getName() + ' has value ' + result[i].getValue());
+                if (result[i].getName() == 'sub') {
+                  console.log('Overwriting userId into local storage');
+                  localStorage.setItem('userId', result[i].getValue());
+                }
+            }
+          });
+
+          loggedInDisplay();
+        },
+
+        onFailure: function(err) {
+          alert(err.message);
+        },
+
+      });
+    }
+
+    function refreshAWSCredentials() {
+
+      var userPoolId = localStorage.getItem('userPoolId');
+      var clientId = localStorage.getItem('clientId');
+      var identityPoolId = localStorage.getItem('identityPoolId');
+      var loginPrefix = localStorage.getItem('loginPrefix');
+
+      var poolData = {
+        UserPoolId : userPoolId, // Your user pool id here
+        ClientId : clientId // Your client id here
+      };
+      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+      var cognitoUser = userPool.getCurrentUser();
+
+      if (cognitoUser != null) {
+            cognitoUser.getSession(function(err, result) {
+                if (result) {
+                    console.log('You are now logged in.');
+                    cognitoUser.refreshSession(result.getRefreshToken(), function(err, result) {
+
+                        if (err) {//throw err;
+                            console.log('In the err: '+err);
+                        }
+                        else{
+                            localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
+                            var sessionTokens =
+                            {
+                              IdToken: result.getIdToken(),
+                              AccessToken: result.getAccessToken(),
+                              RefreshToken: result.getRefreshToken()
+                            };
+                            localStorage.setItem("sessionTokens", JSON.stringify(sessionTokens));
+
+                        }
+                    });
+
+                }
+            });
+        }
+
+
+    }
+
+    $("#loginForm").submit(function(event) {
+      event.preventDefault();
+      loginUser();
+    });
+
+
+</script>
+
+</html>
