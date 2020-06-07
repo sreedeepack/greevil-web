@@ -8,4 +8,37 @@
 <hr>
 <p>This is a great starting point for new custom pages.</p>
 
+{% for user in users %}
+<ul>
+      <li>{{ user.Email }}</li>
+      <li>{{ user.FirstName }}</li>
+      <li>{{ user.LastName }}</li>
+
+</ul>
+{% endfor %}
+<div class="row">
+      <div class="col-lg-6 col-md-6">
+
+            <h3> 
+                  Add to contacts
+            </h3>
+            <hr>
+            <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+                  
+                  <div class="form-group input-group">
+                        <input type="text" class="form-control" placeholder="Email ID">
+                        <div class="input-group-append">
+                              <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-arrow-right"></i>
+                              </button>
+                        </div>
+                  </div>
+      
+            </form>
+              
+      </div>
+</div>
+
+
+
 {% endblock sb_admin_content %}

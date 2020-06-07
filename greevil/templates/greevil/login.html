@@ -91,9 +91,15 @@
     // $("#loginModal").modal("hide");
     // $("#logInButton").addClass("d-none");
     // $("#logOutButton").removeClass("d-none");
+    $.post('../start/'+localStorage.getItem("email"), 
+        function(data) {
+          alert("Welcome Back!");
+      });
+
     window.location.replace("/greevil/dashboard")
   }
 
+  
   function initializeStorage() {
     var identityPoolId = cognitoUserPoolId;//
     var userPoolId = cognitoUserPoolId; //
@@ -237,8 +243,10 @@
     $("#loginForm").submit(function(event) {
       event.preventDefault();
       loginUser();
+      
     });
 
+    
 
 </script>
 

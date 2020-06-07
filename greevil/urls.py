@@ -6,7 +6,7 @@ from django.urls import path
 
 
 urlpatterns = [
-    url(r'^$', greevil.views.start, name='sb_admin_start'),
+    url(r'^$', greevil.views.blank, name='sb_admin_start'),
     path('register/', TemplateView.as_view(
         template_name="greevil/register.html"),
         name='sb_admin_register'
@@ -25,7 +25,7 @@ urlpatterns = [
     ),
     url(r'^login/$', greevil.views.login, name='sb_admin_login'),
     url(r'^dashboard/$', greevil.views.dashboard, name='sb_admin_dashboard'),
-    # url("register/confirm/success", greevil.views.login, name='sb_admin_login_after_confirm'),
+    url(r'^start/(?P<email_id>.[\w.@]+)/$', greevil.views.start, name='start'),
     url(r'^charts/$', greevil.views.charts, name='sb_admin_charts'),
     url(r'^tables/$', greevil.views.tables, name='sb_admin_tables'),
     url(r'^forms/$', greevil.views.forms, name='sb_admin_forms'),

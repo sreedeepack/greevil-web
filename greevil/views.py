@@ -1,16 +1,37 @@
-from django.shortcuts import render
+from django.shortcuts import render,HttpResponse
+from django.http import HttpResponseNotAllowed
+import boto3
+from boto3.dynamodb.conditions import Key
 
-
-def start(request):
-    """Start page with a documentation.
-    """
-    return render(
-        request,
-        "greevil/start.html",
-        {
-            "nav_active": "start"
-        }
+def query_user(email):
+    dynamodb = boto3.resource('dynamodb',region_name="us-east-1")
+    
+    table = dynamodb.Table('greevil-users')
+    response = table.query(
+        KeyConditionExpression=Key('CustomerId').eq(email)
     )
+    return response['Items']
+
+
+
+
+def start(request,email_id):
+    
+    # if not request.is_ajax() or not request.method=='POST':
+        # return HttpResponseNotAllowed(['POST'])
+    request.session['email'] = email_id
+    return HttpResponse(email_id)
+    
+    # """Start page with a documentation.
+    # """
+    # email = email_id
+    # return render(
+    #     request,
+    #     "greevil/start.html",
+    #     {
+    #         "nav_active": "start"
+    #     }
+    # )
 
 def login(request):
     """Start page with a documentation.
@@ -67,8 +88,21 @@ def rtl_dashboard(request):
     return render(request, "greevil/sb_admin_rtl_dashboard.html",
                   {"nav_active":"rtl_dashboard"})
 
+
+
+
 def blank(request):
     """Blank page.
     """
+    # user_details = query_user("acquil98@gmail.com")
+    print(request.session["email"])
+    user_details = query_user(request.session["email"])
+
+    context = {
+        'users':user_details,
+        "nav_active":"blank"
+        }
     return render(request, "greevil/sb_admin_blank.html",
-                  {"nav_active":"blank"})
+                  context)
+    
+

@@ -56,7 +56,9 @@
       </a>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
         <!-- <a class="dropdown-item" href="#">Settings</a> -->
-        <a class="dropdown-item" href="#">Activity Log</a>
+        <a class="dropdown-item" id="emailNavBar" href="#">
+        
+        </a>
         <div class="dropdown-divider"></div>
         <!-- <button type="button" id="logInButton" class="btn btn-light">Log In / Register</button> -->
         <!-- <button type="button" id="logOutButton" class="btn btn-light d-none">Log Out</button> -->
@@ -269,6 +271,11 @@
         }
     }
 
+    $.post('../start/'+localStorage.getItem("email"), 
+        function(data) {
+          $("#emailNavBar").html(localStorage.getItem("email"));
+        // alert("Welcome Back!");
+    });
 
 </script>
 </html>
