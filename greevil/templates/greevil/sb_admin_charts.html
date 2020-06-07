@@ -14,11 +14,11 @@
         <div class="card mb-3">
           <div class="card-header">
             <i class="fas fa-chart-area"></i>
-            Area Chart Example</div>
+            Expenditure Trend</div>
           <div class="card-body">
-            <canvas id="myAreaChart" width="100%" height="30"></canvas>
+            <canvas id="expenseAreaChart" width="100%" height="30"></canvas>
           </div>
-          <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+          <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
         </div>
 
         <div class="row">
@@ -26,29 +26,25 @@
             <div class="card mb-3">
               <div class="card-header">
                 <i class="fas fa-chart-bar"></i>
-                Bar Chart Example</div>
+                Expenditure By Month</div>
               <div class="card-body">
                 <canvas id="myBarChart" width="100%" height="50"></canvas>
               </div>
-              <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+              <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
             </div>
           </div>
           <div class="col-lg-4">
             <div class="card mb-3">
               <div class="card-header">
                 <i class="fas fa-chart-pie"></i>
-                Pie Chart Example</div>
+                Money Owed to contacts</div>
               <div class="card-body">
                 <canvas id="myPieChart" width="100%" height="100"></canvas>
               </div>
-              <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+              <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
             </div>
           </div>
         </div>
-
-        <p class="small text-center text-muted my-5">
-          <em>More chart examples coming soon...</em>
-        </p>
 
  
 
@@ -56,6 +52,57 @@
 {% endblock sb_admin_content %}
 {% block sb_admin_custom_js %}
 
+    {{area_chart|json_script:"area_chart_data"}}
+    {{pie_chart|json_script:"pie_chart_data"}}
+    {{bar_chart|json_script:"bar_chart_data"}}
+    
+    <script>
+      monthly_expense_label = "Money Spent: ";
+      var data = document.getElementById('area_chart_data').textContent;
+      data = JSON.parse(data);
+      x_labels = Object.keys(data); 
+      y_data = [];
+      var arrayLength = x_labels.length;
+      max_y = 0;
+      for (var i = 0; i < arrayLength; i++) {
+        y_data[i] = data[x_labels[i]];
+        if(max_y<y_data[i]){
+          max_y = y_data[i]
+        }
+      }
+    </script>
+
+    <script>
+      var data = document.getElementById('pie_chart_data').textContent;
+      data = JSON.parse(data);
+      x_labels_pie = Object.keys(data); 
+      y_data_pie = [];
+      var arrayLength = x_labels_pie.length;
+      
+      for (var i = 0; i < arrayLength; i++) {
+
+        y_data_pie[i] = data[x_labels_pie[i]];
+      }
+    </script>
+
+    <script>
+      var data = document.getElementById('bar_chart_data').textContent;
+      data = JSON.parse(data);
+      
+      x_labels_bar = Object.keys(data); 
+      months = [0,0,0,0,0,0,0,0,0,0,0,0]
+      y_data_bar = [];
+
+      var arrayLength = x_labels_bar.length;
+      max_y_bar = 0;
+      for (var i = 0; i < arrayLength; i++) {
+        y_data_bar[i] = data[x_labels_bar[i]];
+        months[x_labels_bar[i]] = y_data_bar[i];
+        if(max_y_bar<y_data_bar[i]){
+          max_y_bar = y_data_bar[i];
+        }
+      }
+    </script>
 
   <script src="{% static "vendor/chart.js/Chart.min.js" %}"></script>
   <script src="{% static "js/demo/chart-area-demo.js" %}"></script>

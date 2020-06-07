@@ -26,11 +26,15 @@ urlpatterns = [
     url(r'^login/$', greevil.views.login, name='sb_admin_login'),
     url(r'^dashboard/$', greevil.views.dashboard, name='sb_admin_dashboard'),
     url(r'^start/(?P<email_id>.[\w.@]+)/$', greevil.views.start, name='start'),
+    url(r'^add_friend/$', greevil.views.add_friend, name='add_friend'),
+    url(r'add_expense/$', greevil.views.add_expense, name='add_expense'),
+    url(r'delete_expense/$', greevil.views.delete_expense, name='delete_expense'),
+    
     url(r'^charts/$', greevil.views.charts, name='sb_admin_charts'),
     url(r'^tables/$', greevil.views.tables, name='sb_admin_tables'),
     url(r'^forms/$', greevil.views.forms, name='sb_admin_forms'),
     url(r'^bootstrap-elements/$', greevil.views.bootstrap_elements, name='sb_admin_bootstrap_elements'),
     url(r'^bootstrap-grid/$', greevil.views.bootstrap_grid, name='sb_admin_bootstrap_grid'),
     url(r'^rtl-dashboard/$', greevil.views.rtl_dashboard, name='sb_admin_rtl_dashboard'),
-    url(r'^blank/$', greevil.views.blank, name='sb_admin_blank'),
+    url(r'^add/$', greevil.views.blank, name='sb_admin_blank'),
 ]
