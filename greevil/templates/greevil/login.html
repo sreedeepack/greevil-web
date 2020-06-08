@@ -91,12 +91,19 @@
     // $("#loginModal").modal("hide");
     // $("#logInButton").addClass("d-none");
     // $("#logOutButton").removeClass("d-none");
-    $.post('../start/'+localStorage.getItem("email"), 
-        function(data) {
+    $.ajax({
+        type:'POST',
+        url:'/greevil/start/', 
+        data: {"id":localStorage.getItem("email")},
+        success:function(response) {
+          // $("#emailNavBar").html(localStorage.getItem("email"));
           alert("Welcome Back!");
-      });
+          window.location.replace("/greevil/dashboard")
 
-    window.location.replace("/greevil/dashboard")
+          // alert(response["Result"])
+          // window.location.reload();
+        }
+    });
   }
 
   

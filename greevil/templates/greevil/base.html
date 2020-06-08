@@ -288,11 +288,19 @@
         }
     }
 
-    $.post('../start/'+localStorage.getItem("email"), 
-        function(data) {
-          $("#emailNavBar").html(localStorage.getItem("email"));
-        // alert("Welcome Back!");
+    
+    $.ajax({
+      type:'POST',
+      url:'/greevil/start/', 
+      data: {"id":localStorage.getItem("email")},
+      success:function(response) {
+        $("#emailNavBar").html(localStorage.getItem("email"));
+        // alert(response["Result"])
+        // window.location.reload();
+      }
     });
+
+    
 
 </script>
 </html>
