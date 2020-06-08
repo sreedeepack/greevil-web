@@ -25,7 +25,7 @@ urlpatterns = [
     ),
     url(r'^login/$', greevil.views.login, name='sb_admin_login'),
     url(r'^dashboard/$', greevil.views.dashboard, name='sb_admin_dashboard'),
-    url(r'^start/(?P<email_id>.[\w.@]+)/$', greevil.views.start, name='start'),
+    url(r'^start/$', greevil.views.start, name='start'),
     url(r'^add_friend/$', greevil.views.add_friend, name='add_friend'),
     url(r'add_expense/$', greevil.views.add_expense, name='add_expense'),
     url(r'delete_expense/$', greevil.views.delete_expense, name='delete_expense'),

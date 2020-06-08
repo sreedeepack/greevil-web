@@ -199,14 +199,20 @@ def delete_expense(request,dynamodb=None):
     return JsonResponse({'Result':'Success'})
 
 
+@csrf_exempt
+def start(request):
+    print("start")
+    print(request.method)
 
-def start(request,email_id):
-    
-    # if not request.is_ajax() or not request.method=='POST':
+    if not request.is_ajax() or not request.method=='POST':
+        return JsonResponse({'Result':'Forbidden'})
+        
         # return HttpResponseNotAllowed(['POST'])
-    request.session['email'] = email_id
-    return HttpResponse(email_id)
     
+    request.session['email'] = request.POST.get('id')
+    print("Request session success with",request.POST.get('id'))
+    return JsonResponse({'Result':'Success'})
+
     # """Start page with a documentation.
     # """
     # email = email_id
@@ -233,7 +239,6 @@ def dashboard(request):
     l=[]
     for expenses in query_user(email)['Expenses']:
         l.append(query_expenses(expenses))
-
     df = pd.DataFrame(l).sort_values('Date')
     df['Amount']= pd.to_numeric(df['Amount'])
     df['Month']= pd.to_numeric(df["Date"].apply(lambda x:x[5:7]))
@@ -241,7 +246,6 @@ def dashboard(request):
     df['Day']= pd.to_numeric(df["Date"].apply(lambda x:x[8:10]))
 
     now = datetime.datetime.now()
-
     area_chart = df[df['Year']==now.year].groupby(['Date'])['Amount'].sum()
     # bar_chart = df.groupby(['Month'])['Amount'].sum()
 
