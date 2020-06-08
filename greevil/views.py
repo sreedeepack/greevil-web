@@ -204,8 +204,8 @@ def start(request):
     print("start")
     print(request.method)
 
-    if not request.is_ajax() or not request.method=='POST':
-        return JsonResponse({'Result':'Forbidden'})
+    # if not request.is_ajax() or not request.method=='POST':
+    #     return JsonResponse({'Result':'Forbidden'})
         
         # return HttpResponseNotAllowed(['POST'])
     
