@@ -21,7 +21,7 @@ def query_user(email, dynamodb=None):
 @csrf_exempt
 def add_friend(request, dynamodb=None):
     email = request.POST.get('add-friend-email-input')
-    id = request.session['email']
+    id = "acquil98@gmail.com"
 
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb',region_name="us-east-1")
@@ -96,7 +96,7 @@ def add_expense_user_helper(dynamodb, by_id, for_id, h):
 def add_expense(request,dynamodb=None):
     
     if request.method == "POST" :
-        email = request.session['email']
+        email = "acquil98@gmail.com"
         s = str(time.time()) + str(email)
         h = hashlib.md5(s.encode('utf-8')).hexdigest()
         
@@ -141,7 +141,7 @@ def query_expenses(expense_id, dynamodb=None):
 @csrf_exempt
 def delete_expense(request,dynamodb=None):
     
-    email = request.session['email']
+    email = "acquil98@gmail.com"
     id = request.POST.get('id')
     if not dynamodb:
         dynamodb = boto3.resource('dynamodb',region_name="us-east-1")
@@ -235,7 +235,7 @@ def login(request):
 def dashboard(request):
     """Dashboard page.
     """
-    email = request.session['email']
+    email = "acquil98@gmail.com"
     l=[]
     for expenses in query_user(email)['Expenses']:
         l.append(query_expenses(expenses))
@@ -275,7 +275,7 @@ def dashboard(request):
 def charts(request):
     """Charts page.
     """
-    email = request.session['email']
+    email = "acquil98@gmail.com"
     l=[]
     for expenses in query_user(email)['Expenses']:
         l.append(query_expenses(expenses))
@@ -308,7 +308,7 @@ def charts(request):
 def tables(request):
     """Tables page.
     """
-    email = request.session['email']
+    email = "acquil98@gmail.com"
     expense_list = []
     # print(query_user(email)['Expenses'])
     for expenses in query_user(email)['Expenses']:
