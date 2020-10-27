@@ -62,37 +62,35 @@
 
 <!-- Cognito -->
 <script>
-  var cognitoUserPoolId = "us-east-1_RthhXV3XY";
-  var cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
-   $(document).on('click', '.btn-success', function(event) {
-    event.preventDefault();
+    let cognitoUserPoolId = "us-east-1_RthhXV3XY";
+    let cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
+    $(document).on('click', '.btn-success', function (event) {
+        event.preventDefault();
 
-    var confirmCode = document.getElementById('confirmCode').value;
+        let confirmCode = document.getElementById('confirmCode').value;
 
-    var poolData = {
-      UserPoolId : cognitoUserPoolId,
-      ClientId : cognitoUserPoolClientId
-    };
+        let poolData = {
+            UserPoolId: cognitoUserPoolId,
+            ClientId: cognitoUserPoolClientId
+        };
 
-    var userName = localStorage.getItem('email');
+        let userName = localStorage.getItem('email');
 
-    var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-    var userData = {
-        Username : userName,
-        Pool : userPool
-    };
+        let userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        let userData = {
+            Username: userName,
+            Pool: userPool
+        };
 
-    var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-    cognitoUser.confirmRegistration(confirmCode, true, function(err, result) {
-        if (err) {
-            alert(err.message);
-            return;
-        }
-        else
-        {
-          window.location.replace("/greevil/login");
-        }
-        window.location.replace("/greevil/login");
+        let cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+        cognitoUser.confirmRegistration(confirmCode, true, function (err, result) {
+            if (err) {
+                alert(err.message);
+                return;
+            } else {
+                window.location.replace("/greevil/login");
+            }
+            window.location.replace("/greevil/login");
 
     });
 

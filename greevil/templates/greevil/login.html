@@ -74,167 +74,160 @@
 
 <!-- Cognito -->
 <script>
-    
-  var cognitoUserPoolId = "us-east-1_RthhXV3XY";
-  var cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
-  var awsRegion = 'us-east-1';
-  initializeStorage();
 
-  var configString = localStorage.getItem("awsConfig");
-  var config = JSON.parse(configString);
-  if(config != null) {
-    refreshAWSCredentials();
-    loggedInDisplay();
-  }
+    let cognitoUserPoolId = "us-east-1_RthhXV3XY";
+    let cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
+    let awsRegion = 'us-east-1';
+    initializeStorage();
 
-  function loggedInDisplay() {
-    // $("#loginModal").modal("hide");
-    // $("#logInButton").addClass("d-none");
-    // $("#logOutButton").removeClass("d-none");
-    $.ajax({
-        type:'POST',
-        url:'/greevil/start/', 
-        data: {"id":localStorage.getItem("email")},
-        success:function(response) {
-          // $("#emailNavBar").html(localStorage.getItem("email"));
-          alert("Welcome Back!");
-          window.location.replace("/greevil/dashboard")
+    let configString = localStorage.getItem("awsConfig");
+    let config = JSON.parse(configString);
+    if (config != null) {
+        refreshAWSCredentials();
+        loggedInDisplay();
+    }
 
-          // alert(response["Result"])
-          // window.location.reload();
-        }
+    function loggedInDisplay() {
+        $.ajax({
+            type: 'POST',
+            url: '/greevil/start/',
+            data: {"id": localStorage.getItem("email")},
+            success: function (response) {
+                alert("Welcome Back!");
+                window.location.replace("/greevil/dashboard")
+            }
+        });
+    }
+
+
+    function initializeStorage() {
+        let identityPoolId = cognitoUserPoolId;//
+        let userPoolId = cognitoUserPoolId; //
+        let clientId = cognitoUserPoolClientId;//
+        let loginPrefix = 'cognito-idp.' + awsRegion + '.amazonaws.com/' + identityPoolId;
+
+        localStorage.setItem('identityPoolId', identityPoolId);
+        localStorage.setItem('userPoolId', userPoolId);
+        localStorage.setItem('clientId', clientId);
+        localStorage.setItem('loginPrefix', loginPrefix);
+    }
+
+
+    $(document).on('click', '#logOutButton', function (event) {
+        localStorage.clear();
+        document.location.reload();
     });
-  }
-
-  
-  function initializeStorage() {
-    var identityPoolId = cognitoUserPoolId;//
-    var userPoolId = cognitoUserPoolId; //
-    var clientId = cognitoUserPoolClientId;//
-    var loginPrefix = 'cognito-idp.' + awsRegion + '.amazonaws.com/' + identityPoolId;
-
-    localStorage.setItem('identityPoolId', identityPoolId);
-    localStorage.setItem('userPoolId', userPoolId);
-    localStorage.setItem('clientId', clientId);
-    localStorage.setItem('loginPrefix', loginPrefix);
-  }
-
-
-  $(document).on('click', '#logOutButton', function(event) {
-    localStorage.clear();
-    document.location.reload();
-  });
 
 
     function loginUser() {
 
-      var userPoolId = localStorage.getItem('userPoolId');
-      var clientId = localStorage.getItem('clientId');
-      var identityPoolId = localStorage.getItem('identityPoolId');
-      var loginPrefix = localStorage.getItem('loginPrefix');
+        let userPoolId = localStorage.getItem('userPoolId');
+        let clientId = localStorage.getItem('clientId');
+        let identityPoolId = localStorage.getItem('identityPoolId');
+        let loginPrefix = localStorage.getItem('loginPrefix');
 
-      var poolData = {
-        UserPoolId : userPoolId, // Your user pool id here
-        ClientId : clientId // Your client id here
-      };
-      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        let poolData = {
+            UserPoolId: userPoolId, // Your user pool id here
+            ClientId: clientId // Your client id here
+        };
+        let userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-      var email = document.getElementById('inputEmail').value;
-      var pwd = document.getElementById('inputPassword').value;
+        let email = document.getElementById('inputEmail').value;
+        let pwd = document.getElementById('inputPassword').value;
 
-      var authenticationData =
-      {
-        'UserName': email,
-        'Password': pwd
-      }
-      var userData = {
-        Username : email,
-        Pool : userPool
-      };
+        let authenticationData =
+            {
+                'UserName': email,
+                'Password': pwd
+            };
+        let userData = {
+            Username: email,
+            Pool: userPool
+        };
 
-      var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
-      var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-      cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: function (result) {
-          console.log('access token + \n' + result.getAccessToken().getJwtToken());
+        let authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
+        let cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
-          var sessionTokens =
-          {
-            IdToken: result.getIdToken(),
-            AccessToken: result.getAccessToken(),
-            RefreshToken: result.getRefreshToken()
-          };
-          localStorage.setItem('sessionTokens', JSON.stringify(sessionTokens));
+        cognitoUser.authenticateUser(authenticationDetails, {
+            onSuccess: function (result) {
+                console.log('access token + \n' + result.getAccessToken().getJwtToken());
 
-          //POTENTIAL: Region needs to be set if not already set previously elsewhere.
-          AWS.config.region =  awsRegion; 
+                let sessionTokens =
+                    {
+                        IdToken: result.getIdToken(),
+                        AccessToken: result.getAccessToken(),
+                        RefreshToken: result.getRefreshToken()
+                    };
+                localStorage.setItem('sessionTokens', JSON.stringify(sessionTokens));
 
-          AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId : identityPoolId, // your identity pool id here
-            Logins : { 
-              // Change the key below according to the specific region your user pool is in.
-               loginPrefix : sessionTokens.IdToken.jwtToken
-            }
-          });
+                //POTENTIAL: Region needs to be set if not already set previously elsewhere.
+                // AWS.config.region =  awsRegion;
 
-          localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
-          localStorage.setItem('email', email);
+                AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                    IdentityPoolId: identityPoolId, // your identity pool id here
+                    Logins: {
+                        // Change the key below according to the specific region your user pool is in.
+                        loginPrefix: sessionTokens.IdToken.jwtToken
+                    }
+                });
 
-          cognitoUser.getUserAttributes(function(err, result) {
-            if (err) {
-                // alert(err);
-                return;
-            }
-            for (i = 0; i < result.length; i++) {
-                console.log('attribute ' + result[i].getName() + ' has value ' + result[i].getValue());
-                if (result[i].getName() == 'sub') {
-                  console.log('Overwriting userId into local storage');
-                  localStorage.setItem('userId', result[i].getValue());
-                }
-            }
-          });
+                localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
+                localStorage.setItem('email', email);
 
-          loggedInDisplay();
-        },
+                cognitoUser.getUserAttributes(function (err, result) {
+                    if (err) {
+                        // alert(err);
+                        return;
+                    }
+                    for (i = 0; i < result.length; i++) {
+                        console.log('attribute ' + result[i].getName() + ' has value ' + result[i].getValue());
+                        if (result[i].getName() === 'sub') {
+                            console.log('Overwriting userId into local storage');
+                            localStorage.setItem('userId', result[i].getValue());
+                        }
+                    }
+                });
 
-        onFailure: function(err) {
-          alert(err.message);
-        },
+                loggedInDisplay();
+            },
 
-      });
+            onFailure: function (err) {
+                alert(err.message);
+            },
+
+        });
     }
 
     function refreshAWSCredentials() {
 
-      var userPoolId = localStorage.getItem('userPoolId');
-      var clientId = localStorage.getItem('clientId');
-      var identityPoolId = localStorage.getItem('identityPoolId');
-      var loginPrefix = localStorage.getItem('loginPrefix');
+        let userPoolId = localStorage.getItem('userPoolId');
+        let clientId = localStorage.getItem('clientId');
+        let identityPoolId = localStorage.getItem('identityPoolId');
+        let loginPrefix = localStorage.getItem('loginPrefix');
 
-      var poolData = {
-        UserPoolId : userPoolId, // Your user pool id here
-        ClientId : clientId // Your client id here
-      };
-      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-      var cognitoUser = userPool.getCurrentUser();
+        let poolData = {
+            UserPoolId: userPoolId, // Your user pool id here
+            ClientId: clientId // Your client id here
+        };
+        let userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        let cognitoUser = userPool.getCurrentUser();
 
-      if (cognitoUser != null) {
-            cognitoUser.getSession(function(err, result) {
+        if (cognitoUser != null) {
+            cognitoUser.getSession(function (err, result) {
                 if (result) {
                     console.log('You are now logged in.');
-                    cognitoUser.refreshSession(result.getRefreshToken(), function(err, result) {
+                    cognitoUser.refreshSession(result.getRefreshToken(), function (err, result) {
 
                         if (err) {//throw err;
-                            console.log('In the err: '+err);
-                        }
-                        else{
+                            console.log('In the err: ' + err);
+                        } else {
                             localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
-                            var sessionTokens =
-                            {
-                              IdToken: result.getIdToken(),
-                              AccessToken: result.getAccessToken(),
-                              RefreshToken: result.getRefreshToken()
-                            };
+                            let sessionTokens =
+                                {
+                                    IdToken: result.getIdToken(),
+                                    AccessToken: result.getAccessToken(),
+                                    RefreshToken: result.getRefreshToken()
+                                };
                             localStorage.setItem("sessionTokens", JSON.stringify(sessionTokens));
 
                         }
@@ -247,13 +240,37 @@
 
     }
 
-    $("#loginForm").submit(function(event) {
-      event.preventDefault();
-      loginUser();
-      
+
+    $("#loginForm").submit(function (event) {
+        event.preventDefault();
+        {#loginUser();#}
+        loginTestUser();
+        loggedInDisplay();//Remove later
     });
 
-    
+    {#TODO remove#}
+
+    function loginTestUser() {
+
+        let email = document.getElementById('inputEmail').value;
+        let pwd = document.getElementById('inputPassword').value;
+
+        localStorage.setItem('email', email);
+        $.ajax({
+            type: "POST",
+            url: "http://localhost:5000/user/search/",
+            data: JSON.stringify({'email': email}),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (response) {
+                localStorage.setItem('email', email);
+                window.location.replace('/greevil/dashboard/');
+            },
+            error: function (err) {
+                window.alert(err);
+            }
+        });
+    }
 
 </script>
 
