@@ -1,14 +1,16 @@
-{% load static %}<!DOCTYPE html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="{% block sb_admin_description %}{% endblock sb_admin_description %}">
-  <meta name="author" content="{% block sb_admin_author %}{% endblock %}">
-  <title>{% block title %}Greevil Dashboard{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% block sb_admin_description %}{% endblock sb_admin_description %}">
+    <meta name="author" content="{% block sb_admin_author %}{% endblock %}">
+    <title>{% block title %}Greevil Dashboard{% endblock %}</title>
 
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
   <!-- Custom fonts for this template-->
   <link href="{% static "vendor/fontawesome-free/css/all.min.css"  %}" rel="stylesheet" type="text/css">
@@ -49,7 +51,7 @@
 
   <!-- Navbar -->
   <ul class="navbar-nav ml-auto ml-md-0">
-    
+
     <li class="nav-item dropdown no-arrow">
       <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fas fa-user-circle fa-fw"></i>
@@ -57,7 +59,7 @@
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
         <!-- <a class="dropdown-item" href="#">Settings</a> -->
         <a class="dropdown-item" id="emailNavBar" href="#">
-        
+
         </a>
         <div class="dropdown-divider"></div>
         <!-- <button type="button" id="logInButton" class="btn btn-light">Log In / Register</button> -->
@@ -86,8 +88,8 @@
         <i class="fas fa-fw fa-plus"></i>
         <span>Add Expenses</span></a>
     </li>
-    
-    <li class="nav-item">
+
+        <li class="nav-item">
       <a class="nav-link" href="{% url "sb_admin_charts" %}">
         <i class="fas fa-fw fa-chart-area"></i>
         <span>Charts</span></a>
@@ -186,13 +188,15 @@
 <!-- Cognito -->
 <script>
     {#TODO make this safer#}
-    let cognitoUserPoolId = "us-east-1_RthhXV3XY";
-    let cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
-    let awsRegion = 'us-east-1';
+    /*
+    let cognitoUserPoolId = "{{ cognitoUserPoolId }}";
+    let cognitoUserPoolClientId = "{{ cognitoUserPoolClientId }}";
+    let awsRegion = '{{ awsRegion }}';
     initializeStorage();
 
     let configString = localStorage.getItem("awsConfig");
     let config = JSON.parse(configString);
+
 
     if (config != null) {
         refreshAWSCredentials();
@@ -266,27 +270,32 @@
             });
         }
     }
-
-    /*
-    $.ajax({
-      type:'POST',
-      url:'/greevil/start/',
-      data: {"id":localStorage.getItem("email")},
-      success:function(response) {
-        $("#emailNavBar").html(localStorage.getItem("email"));
-      }
-    });
     */
     $.ajax({
         type: 'POST',
         url: '/greevil/start/',
-        data: JSON.stringify({"id": localStorage.getItem("email")}),
+        data: {"id": localStorage.getItem("email")},
+        success: function (response) {
+            console.log("base.html ajax success")
+            $("#emailNavBar").html(localStorage.getItem("email"));
+        },
+        error: function (err) {
+            console.log(err)
+        }
+    });
+    /*
+    $.ajax({
+        type: 'POST',
+        url: '/greevil/start/',
+        data: {"id": localStorage.getItem("email")},
         dataType: "json",
         contentType: "application/json",
         success: function (response) {
+            console.log("base.html ajax success")
             $("#emailNavBar").html(localStorage.getItem("email"));
         }
     });
+    */
 
 </script>
 </html>

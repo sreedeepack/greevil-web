@@ -91,8 +91,8 @@
 
 <script>
     {#TODO make it secure#}
-    let cognitoUserPoolId = "us-east-1_RthhXV3XY";
-    let cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
+    let cognitoUserPoolId = "{{ cognitoUserPoolId }}";
+    let cognitoUserPoolClientId = "{{ cognitoUserPoolClientId }}";
 
     $(document).on('click', '.btn-block', function (event) {
         event.preventDefault();

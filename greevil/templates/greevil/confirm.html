@@ -54,16 +54,16 @@
   <!-- Core plugin JavaScript-->
   <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
   <!-- Cognito -->
-  <script src="{%static "js/aws-cognito-sdk.min.js" %}"></script>
-  <script src="{%static "js/amazon-cognito-identity.min.js" %}"></script>
+  <script src="{% static "js/aws-cognito-sdk.min.js" %}"></script>
+  <script src="{% static "js/amazon-cognito-identity.min.js" %}"></script>
 
 
 </body>
 
 <!-- Cognito -->
 <script>
-    let cognitoUserPoolId = "us-east-1_RthhXV3XY";
-    let cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
+    let cognitoUserPoolId = "{{ cognitoUserPoolId }}";
+    let cognitoUserPoolClientId = "{{ cognitoUserPoolClientId }}";
     $(document).on('click', '.btn-success', function (event) {
         event.preventDefault();
 

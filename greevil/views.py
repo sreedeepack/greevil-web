@@ -1,6 +1,3 @@
-import datetime
-
-import pandas as pd
 import requests
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -71,23 +68,48 @@ def delete_expense(request):
 def start(request):
     request.session['email'] = request.POST.get('id')
     print("Request session success with", request.POST.get('id'))
+    print(f"And request.session[email]={request.session['email']}")
     return JsonResponse({'Result': 'Success'})
 
 
 def login(request):
-    """Start page with a documentation.
+    """
+    Start page with a documentation.
     """
     return render(
         request,
-        "greevil/login.html"
+        "greevil/login.html",
+    )
+
+
+def register(request):
+    """
+    New user registration page.
+    """
+    return render(
+        request,
+        "greevil/register.html",
+    )
+
+
+def register_confirm(request):
+    """
+    Confirmation with OTP
+    """
+
+    return render(
+        request,
+        "greevil/confirm.html",
     )
 
 
 def dashboard(request):
-    """Dashboard page.
+    """
+    Dashboard page.
     """
     email = get_email(request)
     print(f"Dashboard email {email}")
+
     data = {
         "email": email,
         # "from_date": "2020-10-27",
@@ -130,6 +152,7 @@ def dashboard(request):
     #     "expenses": exp_list,
     #     "nav_active": "dashboard"
     # }
+    # context.update(aws_context)
     return render(
         request,
         "greevil/sb_admin_dashboard.html",
@@ -138,9 +161,11 @@ def dashboard(request):
 
 
 def charts(request):
-    """Charts page.
+    """
+    Charts page.
     """
     email = request.session['email']
+
     data = {
         "email": email,
     }
@@ -148,28 +173,28 @@ def charts(request):
     json_response = response.json()
     exp_list = json_response['data']
 
-    df = pd.DataFrame(exp_list).sort_values('Date')
-    df['Amount'] = pd.to_numeric(df['Amount'])
-    df['Month'] = pd.to_numeric(df["Date"].apply(lambda x: x[5:7]))
-    df['Year'] = pd.to_numeric(df["Date"].apply(lambda x: x[0:4]))
-    df['Day'] = pd.to_numeric(df["Date"].apply(lambda x: x[8:10]))
+    # df = pd.DataFrame(exp_list).sort_values('Date')
+    # df['Amount'] = pd.to_numeric(df['Amount'])
+    # df['Month'] = pd.to_numeric(df["Date"].apply(lambda x: x[5:7]))
+    # df['Year'] = pd.to_numeric(df["Date"].apply(lambda x: x[0:4]))
+    # df['Day'] = pd.to_numeric(df["Date"].apply(lambda x: x[8:10]))
+    #
+    # now = datetime.datetime.now()
+    #
+    # area_chart = df[df['Year'] == now.year].groupby(['Date'])['Amount'].sum()
+    # bar_chart = df.groupby(['Month'])['Amount'].sum()
+    #
+    # friends_amount = df[(df['By'] != email) & (df['For'] == email)].groupby(['By'])['Amount'].sum()
+    #
+    # context = {
+    #     "pie_chart": friends_amount.to_dict,
+    #     "area_chart": area_chart.to_dict(),
+    #     "bar_chart": bar_chart.to_dict(),
+    #     "nav_active": "charts"
+    # }
 
-    now = datetime.datetime.now()
-
-    area_chart = df[df['Year'] == now.year].groupby(['Date'])['Amount'].sum()
-    bar_chart = df.groupby(['Month'])['Amount'].sum()
-
-    friends_amount = df[(df['By'] != email) & (df['For'] == email)].groupby(['By'])['Amount'].sum()
-
-    context = {
-        "pie_chart": friends_amount.to_dict,
-        "area_chart": area_chart.to_dict(),
-        "bar_chart": bar_chart.to_dict(),
-        "nav_active": "charts"
-    }
-
-    return render(request, "greevil/sb_admin_charts.html",
-                  context)
+    return render(request, "greevil/sb_admin_charts.html", )
+    # context)
 
 
 def tables(request):
@@ -224,7 +249,7 @@ def rtl_dashboard(request):
                   {"nav_active": "rtl_dashboard"})
 
 
-def blank(request):
+def add(request):
     """Blank page.
     Adding friends?
     """
@@ -243,5 +268,5 @@ def blank(request):
         'friends': friends,
         "nav_active": "blank"
     }
-    return render(request, "greevil/sb_admin_blank.html",
+    return render(request, "greevil/sb_admin_add.html",
                   context)

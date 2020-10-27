@@ -3,17 +3,25 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 import greevil.views
+from settings import AWS
+
+aws = AWS()
+aws_context = {
+    "cognitoUserPoolId": aws.cognitoUserPoolId,
+    "cognitoUserPoolClientId": aws.cognitoUserPoolClientId,
+    "awsRegion": aws.awsRegion
+}
 
 urlpatterns = [
-    url(r'^$', greevil.views.blank, name='sb_admin_start'),
-    path('register/', TemplateView.as_view(
-        template_name="greevil/register.html"),
-         name='sb_admin_register'
-         ),
-    path('register/confirm/', TemplateView.as_view(
-        template_name="greevil/confirm.html"),
-         name='sb_admin_confirm'
-         ),
+    url(r'^$', greevil.views.add, name='sb_admin_start'),
+    # path('register/', TemplateView.as_view(
+    #      template_name="greevil/register.html"),
+    #      'sb_admin_register',
+    #      ),
+    # path('register/confirm/', TemplateView.as_view(
+    #     template_name="greevil/confirm.html"),
+    #      name='sb_admin_confirm'
+    #      ),
     path('forgot_password/', TemplateView.as_view(
         template_name="greevil/forgot_password.html"),
          name='sb_admin_forgot_password'
@@ -22,6 +30,8 @@ urlpatterns = [
         template_name="greevil/sb_admin_404.html"),
          name='sb_admin_404'
          ),
+    url(r'^register/$', greevil.views.register, name='sb_admin_register'),
+    url(r'^register/confirm/$', greevil.views.register_confirm, name='sb_admin_confirm'),
     url(r'^login/$', greevil.views.login, name='sb_admin_login'),
     url(r'^dashboard/$', greevil.views.dashboard, name='sb_admin_dashboard'),
     url(r'^start/$', greevil.views.start, name='start'),
@@ -35,5 +45,5 @@ urlpatterns = [
     url(r'^bootstrap-elements/$', greevil.views.bootstrap_elements, name='sb_admin_bootstrap_elements'),
     url(r'^bootstrap-grid/$', greevil.views.bootstrap_grid, name='sb_admin_bootstrap_grid'),
     url(r'^rtl-dashboard/$', greevil.views.rtl_dashboard, name='sb_admin_rtl_dashboard'),
-    url(r'^add/$', greevil.views.blank, name='sb_admin_blank'),
+    url(r'^add/$', greevil.views.add, name='sb_admin_add'),
 ]
