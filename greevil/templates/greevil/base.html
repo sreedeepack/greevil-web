@@ -32,6 +32,7 @@
 </head>
 
 <body id="page-top">
+
 <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
   <a class="navbar-brand" href="{% block sb_admin_header_url %}{% url "sb_admin_start" %}{% endblock sb_admin_header_url %}">{% block sb_admin_header %}Greevil{% endblock sb_admin_header %}</a>
 
@@ -62,51 +63,52 @@
 
         </a>
         <div class="dropdown-divider"></div>
-        <!-- <button type="button" id="logInButton" class="btn btn-light">Log In / Register</button> -->
-        <!-- <button type="button" id="logOutButton" class="btn btn-light d-none">Log Out</button> -->
-        <!-- <a class="dropdown-item" href="#" id="logOutButton">Log in/Sign up</a> -->
-        <a class="dropdown-item" href="#" id="logOutButton">Logout</a>
+          <!-- <button type="button" id="logInButton" class="btn btn-light">Log In / Register</button> -->
+          <!-- <button type="button" id="logOutButton" class="btn btn-light d-none">Log Out</button> -->
+          <!-- <a class="dropdown-item" href="#" id="logOutButton">Log in/Sign up</a> -->
+          <a class="dropdown-item" href="#" id="logOutButton">Logout</a>
 
       </div>
     </li>
   </ul>
   {% endblock sb_admin_navbar_right %}
 </nav>
+{#TODO some error here#}
 <div id="wrapper"><!-- wrapper -->
-  <!-- Sidebar -->
-  <ul class="sidebar navbar-nav">
-    {% block sb_admin_sidebar %}
-    <li class="nav-item active">
-      <a class="nav-link" href="{% url "sb_admin_dashboard" %}">
-        <i class="fas fa-fw fa-tachometer-alt"></i>
-        <span>Dashboard</span>
-      </a>
-    </li>
+    <!-- Sidebar -->
+    <ul class="sidebar navbar-nav">
+        {% block sb_admin_sidebar %}
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url "sb_admin_dashboard" %}">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="{% url "sb_admin_blank" %}">
-        <i class="fas fa-fw fa-plus"></i>
-        <span>Add Expenses</span></a>
-    </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url "sb_admin_add" %}">
+                    <i class="fas fa-fw fa-plus"></i>
+                    <span>Add Expenses</span></a>
+            </li>
 
-        <li class="nav-item">
-      <a class="nav-link" href="{% url "sb_admin_charts" %}">
-        <i class="fas fa-fw fa-chart-area"></i>
-        <span>Charts</span></a>
-    </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url "sb_admin_charts" %}">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Charts</span></a>
+            </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="{% url "sb_admin_blank" %}">
-        <i class="fas fa-fw fa-user-plus"></i>
-        <span>Add Contacts</span></a>
-    </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url "sb_admin_add" %}">
+                    <i class="fas fa-fw fa-user-plus"></i>
+                    <span>Add Contacts</span></a>
+            </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="{% url "sb_admin_tables" %}">
-        <i class="fas fa-fw fa-table"></i>
-        <span>Manage Expenses</span></a>
-    </li>
-    {% endblock sb_admin_sidebar %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url "sb_admin_tables" %}">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Manage Expenses</span></a>
+            </li>
+        {% endblock sb_admin_sidebar %}
   </ul>
   <div id="content-wrapper"><!-- content wrapper -->
     <div class="container-fluid"><!-- cfluid -->

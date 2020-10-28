@@ -13,7 +13,8 @@ aws_context = {
 }
 
 urlpatterns = [
-    url(r'^$', greevil.views.add, name='sb_admin_start'),
+    # TODO have a different start page?
+    url(r'^$', greevil.views.dashboard, name='sb_admin_start'),
     # path('register/', TemplateView.as_view(
     #      template_name="greevil/register.html"),
     #      'sb_admin_register',
@@ -36,7 +37,7 @@ urlpatterns = [
     url(r'^dashboard/$', greevil.views.dashboard, name='sb_admin_dashboard'),
     url(r'^start/$', greevil.views.start, name='start'),
     url(r'^add_friend/$', greevil.views.add_friend, name='add_friend'),
-    url(r'add_expense/$', greevil.views.add_expense, name='add_expense'),
+    url(r'^add_expense/$', greevil.views.add_expense, name='add_expense'),
     url(r'delete_expense/$', greevil.views.delete_expense, name='delete_expense'),
 
     url(r'^charts/$', greevil.views.charts, name='sb_admin_charts'),

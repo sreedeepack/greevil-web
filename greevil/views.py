@@ -254,7 +254,7 @@ def add(request):
     Adding friends?
     """
     email = request.session["email"]
-    response = requests.post(f"{APP_SERVER}/user/add/", json={"email": email})
+    response = requests.post(f"{APP_SERVER}/user/search/", json={"email": email})
     json_response = response.json()
 
     response = requests.post(f"{APP_SERVER}/user/search/", json={"email": email})
@@ -266,7 +266,7 @@ def add(request):
     context = {
         'users': email,
         'friends': friends,
-        "nav_active": "blank"
+        "nav_active": "add"
     }
     return render(request, "greevil/sb_admin_add.html",
                   context)
