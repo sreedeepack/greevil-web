@@ -81,7 +81,6 @@ def login(request):
         "greevil/login.html",
     )
 
-
 def register(request):
     """
     New user registration page.

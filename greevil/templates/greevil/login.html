@@ -73,15 +73,15 @@
 
 <!-- Cognito -->
 <script>
-    let cognitoUserPoolId = "{{ cognitoUserPoolId }} ";//"us-east-1_RthhXV3XY";
-    let cognitoUserPoolClientId = "{{ cognitoUserPoolClientId }}";//"20piadmcfn4hkt62oipkq5matk";
-    let awsRegion = "{{ awsRegion }}";//'us-east-1';
+    var cognitoUserPoolId = "{{ cognitoUserPoolId }} ";//"us-east-1_RthhXV3XY";
+    var cognitoUserPoolClientId = "{{ cognitoUserPoolClientId }}";//"20piadmcfn4hkt62oipkq5matk";
+    var awsRegion = "{{ awsRegion }}";//'us-east-1';
 
     console.log(awsRegion)
     initializeStorage();
 
-    let configString = localStorage.getItem("awsConfig");
-    let config = JSON.parse(configString);
+    var configString = localStorage.getItem("awsConfig");
+    var config = JSON.parse(configString);
     if (config != null) {
         refreshAWSCredentials();
         loggedInDisplay();
@@ -101,10 +101,10 @@
 
 
     function initializeStorage() {
-        let identityPoolId = cognitoUserPoolId;//
-        let userPoolId = cognitoUserPoolId; //
-        let clientId = cognitoUserPoolClientId;//
-        let loginPrefix = 'cognito-idp.' + awsRegion + '.amazonaws.com/' + identityPoolId;
+        var identityPoolId = cognitoUserPoolId;//
+        var userPoolId = cognitoUserPoolId; //
+        var clientId = cognitoUserPoolClientId;//
+        var loginPrefix = 'cognito-idp.' + awsRegion + '.amazonaws.com/' + identityPoolId;
 
         localStorage.setItem('identityPoolId', identityPoolId);
         localStorage.setItem('userPoolId', userPoolId);
@@ -120,39 +120,39 @@
 
 
     function loginUser() {
+        console.log("LOGIN USER CALLED");
+        var userPoolId = localStorage.getItem('userPoolId');
+        var clientId = localStorage.getItem('clientId');
+        var identityPoolId = localStorage.getItem('identityPoolId');
+        var loginPrefix = localStorage.getItem('loginPrefix');
 
-        let userPoolId = localStorage.getItem('userPoolId');
-        let clientId = localStorage.getItem('clientId');
-        let identityPoolId = localStorage.getItem('identityPoolId');
-        let loginPrefix = localStorage.getItem('loginPrefix');
-
-        let poolData = {
+        var poolData = {
             UserPoolId: userPoolId, // Your user pool id here
             ClientId: clientId // Your client id here
         };
-        let userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-        let email = document.getElementById('inputEmail').value;
-        let pwd = document.getElementById('inputPassword').value;
-
-        let authenticationData =
+        var email = document.getElementById('inputEmail').value;
+        var pwd = document.getElementById('inputPassword').value;
+        console.log("EMAIL INITIAL"+email);
+        var authenticationData =
             {
                 'UserName': email,
                 'Password': pwd
             };
-        let userData = {
+        var userData = {
             Username: email,
             Pool: userPool
         };
 
-        let authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
-        let cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+        var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
+        var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
         cognitoUser.authenticateUser(authenticationDetails, {
             onSuccess: function (result) {
                 console.log('access token + \n' + result.getAccessToken().getJwtToken());
 
-                let sessionTokens =
+                var sessionTokens =
                     {
                         IdToken: result.getIdToken(),
                         AccessToken: result.getAccessToken(),
@@ -173,6 +173,7 @@
 
                 localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
                 localStorage.setItem('email', email);
+                console.log("EMAIL:"+email);
 
                 cognitoUser.getUserAttributes(function (err, result) {
                     if (err) {
@@ -200,17 +201,18 @@
 
     function refreshAWSCredentials() {
 
-        let userPoolId = localStorage.getItem('userPoolId');
-        let clientId = localStorage.getItem('clientId');
-        let identityPoolId = localStorage.getItem('identityPoolId');
-        let loginPrefix = localStorage.getItem('loginPrefix');
+        var userPoolId = localStorage.getItem('userPoolId');
+        var clientId = localStorage.getItem('clientId');
+        var identityPoolId = localStorage.getItem('identityPoolId');
+        var loginPrefix = localStorage.getItem('loginPrefix');
+        
 
-        let poolData = {
+        var poolData = {
             UserPoolId: userPoolId, // Your user pool id here
             ClientId: clientId // Your client id here
         };
-        let userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-        let cognitoUser = userPool.getCurrentUser();
+        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        var cognitoUser = userPool.getCurrentUser();
 
         if (cognitoUser != null) {
             cognitoUser.getSession(function (err, result) {
@@ -222,7 +224,7 @@
                             console.log('In the err: ' + err);
                         } else {
                             localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
-                            let sessionTokens =
+                            var sessionTokens =
                                 {
                                     IdToken: result.getIdToken(),
                                     AccessToken: result.getAccessToken(),
@@ -243,8 +245,8 @@
 
     $("#loginForm").submit(function (event) {
         event.preventDefault();
-        {#loginUser();#}
-        loginTestUser();
+        loginUser();
+        // loginTestUser();
         loggedInDisplay();//Remove later
     });
 
@@ -252,8 +254,8 @@
 
     function loginTestUser() {
 
-        let email = document.getElementById('inputEmail').value;
-        let pwd = document.getElementById('inputPassword').value;
+        var email = document.getElementById('inputEmail').value;
+        var pwd = document.getElementById('inputPassword').value;
 
         localStorage.setItem('email', email);
         $.ajax({

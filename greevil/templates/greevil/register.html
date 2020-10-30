@@ -96,7 +96,7 @@
 
     $(document).on('click', '.btn-block', function (event) {
         event.preventDefault();
-        /*
+        
         let poolData = {
             UserPoolId: cognitoUserPoolId,
             ClientId: cognitoUserPoolClientId
@@ -104,7 +104,7 @@
         let userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
         let attributeList = [];
-        */
+        
 
         let email = document.getElementById('inputEmail').value;
         let firstName = document.getElementById('firstName').value;
@@ -126,7 +126,7 @@
             Value: lastName
         };
 
-        /*
+        
         let attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
         let attributeFirstName = new AmazonCognitoIdentity.CognitoUserAttribute(dataFirstName);
         let attributeLastName = new AmazonCognitoIdentity.CognitoUserAttribute(dataLastName);
@@ -135,13 +135,14 @@
         attributeList.push(attributeEmail);
         attributeList.push(attributeFirstName);
         attributeList.push(attributeLastName);
-        */
+        
 
         if (pw === confirmPw) {
             {#TODO change to cognito#}
-            /*
+            
             userPool.signUp(email, pw, attributeList, null, function(err, result){
             if (err) {
+                    console.log(err)
                     alert(err.message);
                     return;
                 }
@@ -150,21 +151,21 @@
                 localStorage.setItem('email', email);
                 window.location.replace('confirm');
             });
-            */
-            $.ajax({
-                type: "POST",
-                url: "http://localhost:5000/user/add/",
-                data: JSON.stringify({'email': email, "name": firstName}),
-                dataType: "json",
-                contentType: "application/json",
-                success: function (response) {
-                    localStorage.setItem('email', email);
-                    window.location.replace('confirm');
-                },
-                error: function (err) {
-                    window.alert(err);
-                }
-            });
+            
+            // $.ajax({
+            //     type: "POST",
+            //     url: "http://localhost:5000/user/add/",
+            //     data: JSON.stringify({'email': email, "name": firstName}),
+            //     dataType: "json",
+            //     contentType: "application/json",
+            //     success: function (response) {
+            //         localStorage.setItem('email', email);
+            //         window.location.replace('confirm');
+            //     },
+            //     error: function (err) {
+            //         window.alert(err);
+            //     }
+            // });
 
         } else {
             alert('Passwords do not match.')

@@ -3,7 +3,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 import greevil.views
-from settings import AWS
+from greevil.settings import AWS
 
 aws = AWS()
 aws_context = {
