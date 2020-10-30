@@ -177,7 +177,7 @@
 
                 cognitoUser.getUserAttributes(function (err, result) {
                     if (err) {
-                        // alert(err);
+                        alert(err);
                         return;
                     }
                     for (i = 0; i < result.length; i++) {
@@ -193,7 +193,7 @@
             },
 
             onFailure: function (err) {
-                alert(err.message);
+                alert("cognito authenticate error: "+err.message);
             },
 
         });

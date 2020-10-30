@@ -253,8 +253,6 @@ def add(request):
     Adding friends?
     """
     email = request.session["email"]
-    response = requests.post(f"{APP_SERVER}/user/search/", json={"email": email})
-    json_response = response.json()
 
     response = requests.post(f"{APP_SERVER}/user/search/", json={"email": email})
     json_response = response.json()
