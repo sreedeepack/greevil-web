@@ -33,32 +33,33 @@
                     <th>Description</th>
                     <th>Amount</th>
                     <th>Paid By</th>
-                    <th>Paid For</th>
-                    <th>Comments</th>
-                    <th>Edit</th>
+                      <th>Paid For</th>
+                      <th>Comments</th>
+                      <th>Edit</th>
 
                   </tr>
                 </thead>
-                <tbody>
-                  
+                  <tbody>
+
                   {% for expense in expenses %}
-                    <tr>
-                      <td>{{ expense.Date }}</td>
-                      <td>{{ expense.Description }}</td>
-                      <td>{{ expense.Amount }}</td>
-                      <td>{{ expense.By }}</td>
-                      <td>{{ expense.For }}</td>
-                      <td>{{ expense.Comments }}</td>
-                      <!-- Delete button -->
-                      <td>
-                        <button class="btn btn-danger delete" id="{{ expense.ExpenseId}}" onclick="post_delete_request(this.id)">
-                        Delete   
-                        </button>
-                      </td>        
-                    </tr>
+                      <tr>
+                          <td>{{ expense.date }}</td>
+                          <td>{{ expense.description }}</td>
+                          <td>{{ expense.amount }}</td>
+                          <td>{{ expense.payor }}</td>
+                          <td>{{ expense.user_id }}</td>
+                          <td>{{ expense.comments }}</td>
+                          <!-- Delete button -->
+                          <td>
+                              <button class="btn btn-danger delete" id="{{ expense.id }}"
+                                      onclick="post_delete_request(this.id)">
+                                  Delete
+                              </button>
+                          </td>
+                      </tr>
                   {% endfor %}
-                  
-                </tbody>
+
+                  </tbody>
               </table>
             </div>
           </div>

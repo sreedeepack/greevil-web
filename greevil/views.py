@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import requests
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -37,21 +39,19 @@ def add_friend(request):
 
 @csrf_exempt
 def add_expense(request):
-    if request.method == "POST":
-        email = get_email(request)
-        data = {
-            "email": email,
-            "amount": request.POST.get('expense-amount-input'),
-            'date': request.POST.get('expense-date-input'),
-            'description': request.POST.get('expense-description-input'),
-            'comments': request.POST.get('expense-comments-input'),
-            'payor': request.POST.get('expense-by-input')
-        }
-        response = requests.post(f"{APP_SERVER}/expenses/add/", json=data)
-        return JsonResponse({'Result': 'Successful'})
-
-    else:
-        return JsonResponse({'Result': 'Invalid Request'})
+    email = get_email(request)
+    data = {
+        "email": email,
+        "amount": Decimal(request.POST.get('expense-amount-input')),
+        'date': request.POST.get('expense-date-input'),
+        'description': request.POST.get('expense-description-input'),
+        'comments': request.POST.get('expense-comments-input'),
+        'payor': request.POST.get('expense-by-input')
+    }
+    print(f"data => {data}")
+    response = requests.post(f"{APP_SERVER}/expenses/add/", json=data)
+    print(response)
+    return JsonResponse({'Result': 'Successful'})
 
 
 @csrf_exempt
@@ -80,6 +80,13 @@ def login(request):
         request,
         "greevil/login.html",
     )
+
+
+def logout(request):
+    """
+    Logout
+    """
+
 
 def register(request):
     """

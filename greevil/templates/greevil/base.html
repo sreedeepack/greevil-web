@@ -204,12 +204,10 @@
         refreshAWSCredentials();
         loggedInDisplay();
     } else {
-        {#TODO remove after integrating cognito#}
         window.location.replace("/greevil/login")
     }
 
     function loggedInDisplay() {
-        // $("#loginModal").modal("hide");
         $("#logInButton").addClass("d-none");
         $("#logOutButton").removeClass("d-none");
     }
