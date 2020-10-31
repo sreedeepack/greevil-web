@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 import requests
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -39,10 +37,12 @@ def add_friend(request):
 
 @csrf_exempt
 def add_expense(request):
-    email = get_email(request)
+    print("Django add_expense")
+    # email = get_email(request)
+    email = request.session['email']
     data = {
         "email": email,
-        "amount": Decimal(request.POST.get('expense-amount-input')),
+        "amount": request.POST.get('expense-amount-input'),
         'date': request.POST.get('expense-date-input'),
         'description': request.POST.get('expense-description-input'),
         'comments': request.POST.get('expense-comments-input'),
@@ -50,7 +50,7 @@ def add_expense(request):
     }
     print(f"data => {data}")
     response = requests.post(f"{APP_SERVER}/expenses/add/", json=data)
-    print(response)
+    print(response.json())
     return JsonResponse({'Result': 'Successful'})
 
 
@@ -148,21 +148,21 @@ def dashboard(request):
     # owed_amount = df[('By' == email) & (df['For'] != email)]['Amount'].sum()
     #
 
-    # context = {
-    #     "monthly_expense": monthly_expenses,
-    #     "friends_payment": friends_amount,
-    #     "owed_amount": owed_amount,
-    #     "new_expenses": new_expenses,
-    #     "area_chart": area_chart.to_dict(),
-    #     # "area_chart_y":area_chart.to_dict(),
-    #     "expenses": exp_list,
-    #     "nav_active": "dashboard"
-    # }
+    context = {
+        #     "monthly_expense": monthly_expenses,
+        #     "friends_payment": friends_amount,
+        #     "owed_amount": owed_amount,
+        #     "new_expenses": new_expenses,
+        #     "area_chart": area_chart.to_dict(),
+        #     # "area_chart_y":area_chart.to_dict(),
+        "expenses": exp_list,
+        "nav_active": "dashboard"
+    }
     # context.update(aws_context)
     return render(
         request,
         "greevil/sb_admin_dashboard.html",
-        # context
+        context
     )
 
 
@@ -230,6 +230,7 @@ def forms(request):
 def bootstrap_elements(request):
     """Bootstrap elements page.
     """
+
     return render(request, "greevil/sb_admin_bootstrap_elements.html",
                   {"nav_active": "bootstrap_elements"})
 
@@ -241,11 +242,20 @@ def bootstrap_grid(request):
                   {"nav_active": "bootstrap_grid"})
 
 
-def dropdown(request):
-    """Dropdown  page.
+def handler404(request, exception, template_name="greevil/404.html"):
+    """Custom 404  page.
     """
-    return render(request, "greevil/sb_admin_dropdown.html",
-                  {"nav_active": "dropdown"})
+    response = render(request, template_name)
+    response.status_code = 404
+    return response
+
+
+def handler500(request, exception, template_name="greevil/500.html"):
+    """Custom 500  page.
+    """
+    response = render(request, template_name)
+    response.status_code = 500
+    return response
 
 
 def rtl_dashboard(request):
@@ -256,7 +266,7 @@ def rtl_dashboard(request):
 
 
 def add(request):
-    """Blank page.
+    """.
     Adding friends?
     """
     email = request.session["email"]
@@ -273,4 +283,25 @@ def add(request):
         "nav_active": "add"
     }
     return render(request, "greevil/sb_admin_add.html",
+                  context)
+
+
+def add_expense_view(request):
+    """.
+    Adding friends?
+    """
+    email = request.session["email"]
+
+    response = requests.post(f"{APP_SERVER}/user/search/", json={"email": email})
+    json_response = response.json()
+
+    user_details = json_response['data']
+    friends = user_details['friend_ids']
+
+    context = {
+        'users': email,
+        'friends': friends,
+        "nav_active": "add"
+    }
+    return render(request, "greevil/sb_admin_add_exp.html",
                   context)

@@ -180,6 +180,7 @@
         localStorage.setItem('email', email);
         $.ajax({
             type: "POST",
+            //TODO change/pass from settings
             url: "http://localhost:5000/cognito/login/",
             data: JSON.stringify({'email': email, 'password': pwd}),
             dataType: "json",
@@ -212,10 +213,10 @@
                     localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
 
                     {# Redirect #}
-                    window.location.replace('/greevil/dashboard/');
+                    {#window.location.replace('/greevil/dashboard/');#}
 
                 } else {
-                    window.alert(response['data'])
+                    window.alert("Error - " + response['data'])
                 }
             },
             error: function (err) {
