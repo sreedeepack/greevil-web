@@ -88,8 +88,9 @@
     <script>
       var data = document.getElementById('bar_chart_data').textContent;
       data = JSON.parse(data);
-      
+      console.log(data)
       x_labels_bar = Object.keys(data); 
+      console.log(x_labels_bar)
       months = [0,0,0,0,0,0,0,0,0,0,0,0]
       y_data_bar = [];
 
@@ -97,7 +98,7 @@
       max_y_bar = 0;
       for (var i = 0; i < arrayLength; i++) {
         y_data_bar[i] = data[x_labels_bar[i]];
-        months[x_labels_bar[i]] = y_data_bar[i];
+        months[x_labels_bar[i]-1] = y_data_bar[i];
         if(max_y_bar<y_data_bar[i]){
           max_y_bar = y_data_bar[i];
         }

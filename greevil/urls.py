@@ -3,14 +3,6 @@ from django.urls import path
 from django.views.generic import TemplateView
 
 import greevil.views
-from greevil.settings import AWS
-
-aws = AWS()
-aws_context = {
-    "cognitoUserPoolId": aws.cognitoUserPoolId,
-    "cognitoUserPoolClientId": aws.cognitoUserPoolClientId,
-    "awsRegion": aws.awsRegion
-}
 
 urlpatterns = [
     # TODO have a different start page?
@@ -23,14 +15,6 @@ urlpatterns = [
     #     template_name="greevil/confirm.html"),
     #      name='sb_admin_confirm'
     #      ),
-    path('forgot_password/', TemplateView.as_view(
-        template_name="greevil/forgot_password.html"),
-         name='sb_admin_forgot_password'
-         ),
-    path('404/', TemplateView.as_view(
-        template_name="greevil/sb_admin_404.html"),
-         name='sb_admin_404'
-         ),
     url(r'^register/$', greevil.views.register, name='sb_admin_register'),
     url(r'^register/confirm/$', greevil.views.register_confirm, name='sb_admin_confirm'),
     url(r'^login/$', greevil.views.login, name='sb_admin_login'),
@@ -47,4 +31,14 @@ urlpatterns = [
     url(r'^bootstrap-grid/$', greevil.views.bootstrap_grid, name='sb_admin_bootstrap_grid'),
     url(r'^rtl-dashboard/$', greevil.views.rtl_dashboard, name='sb_admin_rtl_dashboard'),
     url(r'^add/$', greevil.views.add, name='sb_admin_add'),
+    url(r'^add/expense/$', greevil.views.add_expense_view, name='sb_admin_add_exp'),
+
+    path('forgot/', TemplateView.as_view(
+        template_name="greevil/forgot_password.html"),
+         name='sb_admin_forgot_password'
+         ),
+    path('forgot/confirm/', TemplateView.as_view(
+        template_name="greevil/forgot_confirm.html"),
+         name='sb_admin_forgot_confirm'
+         ),
 ]
