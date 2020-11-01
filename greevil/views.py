@@ -29,9 +29,9 @@ def add_friend(request):
         "friend_id": friend_id
     }
     response = requests.post(f"{APP_SERVER}/user/add/friend/", json=data)
+    print(response)
     json_response = response.json()
     exp_list = json_response['data']
-
     return JsonResponse({'Result': 'Added Successfully'})
 
 

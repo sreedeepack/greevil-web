@@ -24,7 +24,8 @@
                     window.location.replace("/greevil/add")
                 },
                 error: function (response) {
-                    alert(response);
+                    $(".alert").removeClass("d-none");
+                    $("#add-friend-result").text("No user found")
                 }
             });
 

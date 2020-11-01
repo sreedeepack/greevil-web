@@ -169,7 +169,6 @@
         event.preventDefault();
         {#loginUser();#}
         loginTestUser();
-        loggedInDisplay();
     });
 
     function loginTestUser() {
@@ -186,6 +185,7 @@
             dataType: "json",
             contentType: "application/json",
             success: function (response) {
+
                 if (response['status'] === "success") {
                     localStorage.setItem('email', email);
                     {#const sessionTokens = response['data'];#}
@@ -211,6 +211,7 @@
                     });
 
                     localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
+                    loggedInDisplay();
 
                     {# Redirect #}
                     {#window.location.replace('/greevil/dashboard/');#}
