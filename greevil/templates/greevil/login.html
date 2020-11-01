@@ -46,16 +46,26 @@
               </label>
             </div>
           </div>
-          
-          <input type="submit" class="btn btn-block btn-primary" value="Login">
+
+            <input type="submit" class="btn btn-block btn-primary" value="Login">
 
         </form>
-        <div class="text-center">
-          <a class="d-block small mt-3" href="{% url "sb_admin_register" %}">Register an Account</a>
-          <a class="d-block small" href="{% url "sb_admin_forgot_password" %}">Forgot Password?</a>
-        </div>
+          <div class="text-center">
+              <a class="d-block small mt-3" href="{% url "sb_admin_register" %}">Register an Account</a>
+              <a class="d-block small" href="{% url "sb_admin_forgot_password" %}">Forgot Password?</a>
+          </div>
       </div>
     </div>
+
+      <!-- Loading indicator -->
+      {#Loading#}
+      <div id="spinner-pulse" class="loadingio-spinner-pulse center-block">
+          <div class="ldio">
+              <div></div>
+              <div></div>
+              <div></div>
+          </div>
+      </div>
   </div>
 
   <!-- Bootstrap core JavaScript-->
@@ -169,9 +179,13 @@
         event.preventDefault();
         {#loginUser();#}
         loginTestUser();
+
+
     });
 
     function loginTestUser() {
+
+        $("#spinner-pulse").show();
 
         var email = document.getElementById('inputEmail').value;
         var pwd = document.getElementById('inputPassword').value;
@@ -190,7 +204,7 @@
                     localStorage.setItem('email', email);
                     {#const sessionTokens = response['data'];#}
 
-                    var sessionTokens =
+                    const sessionTokens =
                         {
                             IdToken: response['data']['id_token'],
                             AccessToken: response['data']['access_token'],
@@ -211,10 +225,10 @@
                     });
 
                     localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
+
+                    $("#spinner-pulse").hide();
                     loggedInDisplay();
 
-                    {# Redirect #}
-                    {#window.location.replace('/greevil/dashboard/');#}
 
                 } else {
                     window.alert("Error - " + response['data'])

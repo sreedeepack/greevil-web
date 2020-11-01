@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 handler404 = 'greevil.views.handler404'
-handler500 = 'greevil.views.handler500'
+# handler500 = 'greevil.views.handler500'
 
 urlpatterns = [
                  url(r'^', include('helloworld.urls')),

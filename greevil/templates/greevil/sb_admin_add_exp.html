@@ -10,17 +10,23 @@
 
     <script>
         function SubForm() {
+            $("#spinner-pulse").show();
+
             $.ajax({
                 url: '/greevil/add_expense/',
                 type: 'POST',
                 data: $('#add-expense-form').serialize(),
                 success: function (response) {
+                    $("#spinner-pulse").hide();
+
+
                     $(".alert").removeClass("d-none");
                     $("#add-expense-result").text(response["Result"])
                     alert(response["Result"])
                     window.location.replace("/greevil/add")
                 },
                 error: function (response) {
+                    $("#spinner-pulse").hide();
                     alert(response);
                 }
             });
@@ -72,7 +78,15 @@
                     <label for="expense-date-input" class="col-2 col-form-label">Date</label>
                     <div class="col-10">
                         <input class="form-control" required type="date" value="2020-06-10" id="expense-date-input"
-                               name="expense-date-input">
+                               name="expense-date-input"/>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="expense-comments-input" class="col-2 col-form-label">Comments</label>
+                    <div class="col-10">
+                        <textarea class="form-control" rows="3" id="expense-comments-input"
+                                  name="expense-comments-input">Comments</textarea>
                     </div>
                 </div>
 
@@ -119,15 +133,7 @@
                 </div>
 
 
-                <div class="form-group">
-                    <label>Comments</label>
-                    <label>
-                        <textarea class="form-control" rows="3" name="expense-comments-input"></textarea>
-                    </label>
-                </div>
-
-
-                <button type="submit" class="btn btn-primary" onclick="SubForm()">Submit Button</button>
+                <button type="submit" class="btn btn-primary btn-block" onclick="SubForm()">Add Expense</button>
 
             </form>
 

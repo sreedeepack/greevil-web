@@ -12,18 +12,23 @@
 
         function SubForm() {
 
+            $("#spinner-pulse").show();
 
             $.ajax({
                 type: 'POST',
                 url: '/greevil/add_friend/',
                 data: $("#add-friend-form").serialize(),
                 success: function (response) {
+                    $("#spinner-pulse").hide();
+
                     $(".alert").removeClass("d-none");
                     $("#add-friend-result").text(response["Result"])
                     alert(response["Result"])
                     window.location.replace("/greevil/add")
                 },
                 error: function (response) {
+                    $("#spinner-pulse").hide();
+
                     $(".alert").removeClass("d-none");
                     $("#add-friend-result").text("No user found")
                 }

@@ -2,23 +2,30 @@
 
 {% block sb_admin_breadcrumb_active %}
 
-<script>
-  function post_delete_request(id){         
-     
-    $.ajax({
-    type:'POST',
-    url:'/greevil/delete_expense/', 
-    data: {"id":id},
-    success:function(response) {
-      alert(response["Result"])
-      window.location.reload();
-    }
-    });
-  } 
-</script>
+    <script>
+        function post_delete_request(id) {
+            $("#spinner-pulse").show();
 
- <li class="breadcrumb-item active"> / Tables</li>
- {% endblock sb_admin_breadcrumb_active %}
+            $.ajax({
+                type: 'POST',
+                url: '/greevil/delete_expense/',
+                data: {"id": id},
+                success: function (response) {
+                    $("#spinner-pulse").hide();
+
+                    alert(response["Result"])
+                    window.location.reload();
+                },
+                error: function (response) {
+                    $("#spinner-pulse").hide();
+                    alert(response["Result"]);
+                }
+            });
+        }
+    </script>
+
+    <li class="breadcrumb-item active"> / Tables</li>
+{% endblock sb_admin_breadcrumb_active %}
  {% block sb_admin_content %}  
   <!-- DataTables Example -->
         <div class="card mb-3">

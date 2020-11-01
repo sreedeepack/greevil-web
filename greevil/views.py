@@ -114,51 +114,36 @@ def dashboard(request):
     Dashboard page.
     """
     email = get_email(request)
-    print(f"Dashboard email {email}")
 
     data = {
         "email": email,
         # "from_date": "2020-10-27",
         # "to_date": "2020-10-27"
     }
-    response = requests.post(f"{APP_SERVER}/user/view/expenses/", json=data)
+    response = requests.post(f"{APP_SERVER}/expenses/stats/", json=data)
     json_response = response.json()
-    exp_list = json_response['data']
-    print(f"Dashboard exp list {exp_list}")
+    exp_list = json_response['data']['exp_list']
 
-    # TODO move this to app server
+    area_chart = json_response['data']['area_chart']
+    bar_chart = json_response['data']['bar_chart']
 
-    # df = pd.DataFrame(exp_list).sort_values('Date')
-    #
-    #
-    #
-    # df['Amount'] = pd.to_numeric(df['Amount'])
-    # df['Month'] = pd.to_numeric(df["Date"].apply(lambda x: x[5:7]))
-    # df['Year'] = pd.to_numeric(df["Date"].apply(lambda x: x[0:4]))
-    # df['Day'] = pd.to_numeric(df["Date"].apply(lambda x: x[8:10]))
-    #
-    # now = datetime.datetime.now()
-    # area_chart = df[df['Year'] == now.year].groupby(['Date'])['Amount'].sum()
-    # # bar_chart = df.groupby(['Month'])['Amount'].sum()
-    #
-    # new_expenses = df[(df['Year'] == now.year) & (df['Month'] == now.month) & (df['Day'] == now.day)]['Amount'].sum()
-    # monthly_expenses = df[(df['Year'] == now.year) & (df['Month'] == now.month)]['Amount'].sum()
-    #
-    # friends_amount = df[(df['By'] != email) & (df['For'] == email)]['Amount'].sum()
-    # owed_amount = df[('By' == email) & (df['For'] != email)]['Amount'].sum()
-    #
+    new_expenses = json_response['data']['new_expenses']
+    monthly_expenses = json_response['data']['monthly_expenses']
+
+    friends_amount = json_response['data']['friends_amount']
+    owed_amount = json_response['data']['owed_amount']
 
     context = {
-        #     "monthly_expense": monthly_expenses,
-        #     "friends_payment": friends_amount,
-        #     "owed_amount": owed_amount,
-        #     "new_expenses": new_expenses,
-        #     "area_chart": area_chart.to_dict(),
-        #     # "area_chart_y":area_chart.to_dict(),
+        "monthly_expense": monthly_expenses,
+        "friends_payment": friends_amount,
+        "owed_amount": owed_amount,
+        "new_expenses": new_expenses,
+        "area_chart": area_chart,
+        "area_chart_y": area_chart,
         "expenses": exp_list,
         "nav_active": "dashboard"
     }
-    # context.update(aws_context)
+
     return render(
         request,
         "greevil/sb_admin_dashboard.html",
@@ -170,37 +155,30 @@ def charts(request):
     """
     Charts page.
     """
-    email = request.session['email']
+    email = get_email(request)
 
     data = {
         "email": email,
+        # "from_date": "2020-10-27",
+        # "to_date": "2020-10-27"
     }
-    response = requests.post(f"{APP_SERVER}/user/view/expenses/", json=data)
+    response = requests.post(f"{APP_SERVER}/expenses/stats/", json=data)
     json_response = response.json()
-    exp_list = json_response['data']
 
-    # df = pd.DataFrame(exp_list).sort_values('Date')
-    # df['Amount'] = pd.to_numeric(df['Amount'])
-    # df['Month'] = pd.to_numeric(df["Date"].apply(lambda x: x[5:7]))
-    # df['Year'] = pd.to_numeric(df["Date"].apply(lambda x: x[0:4]))
-    # df['Day'] = pd.to_numeric(df["Date"].apply(lambda x: x[8:10]))
-    #
-    # now = datetime.datetime.now()
-    #
-    # area_chart = df[df['Year'] == now.year].groupby(['Date'])['Amount'].sum()
-    # bar_chart = df.groupby(['Month'])['Amount'].sum()
-    #
-    # friends_amount = df[(df['By'] != email) & (df['For'] == email)].groupby(['By'])['Amount'].sum()
-    #
-    # context = {
-    #     "pie_chart": friends_amount.to_dict,
-    #     "area_chart": area_chart.to_dict(),
-    #     "bar_chart": bar_chart.to_dict(),
-    #     "nav_active": "charts"
-    # }
+    area_chart = json_response['data']['area_chart']
+    bar_chart = json_response['data']['bar_chart']
+    pie_chart = json_response['data']['pie_chart']
 
-    return render(request, "greevil/sb_admin_charts.html", )
-    # context)
+    context = {
+        "pie_chart": pie_chart,
+        "area_chart": area_chart,
+        "bar_chart": bar_chart,
+        "nav_active": "charts"
+    }
+
+    return render(request,
+                  "greevil/sb_admin_charts.html",
+                  context)
 
 
 def tables(request):
@@ -288,7 +266,7 @@ def add(request):
 
 def add_expense_view(request):
     """.
-    Adding friends?
+    Adding expenses
     """
     email = request.session["email"]
 
