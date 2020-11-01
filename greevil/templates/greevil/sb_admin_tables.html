@@ -3,7 +3,8 @@
 {% block sb_admin_breadcrumb_active %}
 
 <script>
-  function post_delete_request(id){          
+  function post_delete_request(id){         
+     
     $.ajax({
     type:'POST',
     url:'/greevil/delete_expense/', 
