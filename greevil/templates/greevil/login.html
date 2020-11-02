@@ -19,6 +19,7 @@
   <link href="{% static "css/sb-admin.css" %}" rel="stylesheet">
 </head>
 
+
 <body class="bg-dark">
 
   <div class="container">
@@ -59,13 +60,15 @@
 
       <!-- Loading indicator -->
       {#Loading#}
-      <div id="spinner-pulse" class="loadingio-spinner-pulse center-block">
-          <div class="ldio">
-              <div></div>
-              <div></div>
-              <div></div>
-          </div>
-      </div>
+      <div id="spinner-pulse" class="loadingio-spinner-pulse center-block" style="width: 100%; height: 100%; background-color: black;">
+        <div class="ldio" style="position: absolute; top: 50%;
+        left: 50%;
+        margin: -25px 0 0 -25px;">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
   </div>
 
   <!-- Bootstrap core JavaScript-->
@@ -104,6 +107,7 @@
             data: {"id": localStorage.getItem("email")},
             success: function (response) {
                 alert("Welcome Back!");
+                $("#spinner-pulse").show();
                 window.location.replace("/greevil/dashboard")
             }
         });
@@ -228,6 +232,7 @@
 
                     $("#spinner-pulse").hide();
                     loggedInDisplay();
+
 
 
                 } else {

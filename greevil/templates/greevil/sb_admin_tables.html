@@ -3,6 +3,14 @@
 {% block sb_admin_breadcrumb_active %}
 
     <script>
+        function makeNavTitleActive (id){
+            document.getElementById(id).className="nav-item active";
+        }
+
+        window.onload = function (){
+            makeNavTitleActive("Manage-expenses-nav-item")
+        }
+
         function post_delete_request(id) {
             $("#spinner-pulse").show();
 

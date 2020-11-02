@@ -168,8 +168,10 @@ def charts(request):
     area_chart = json_response['data']['area_chart']
     bar_chart = json_response['data']['bar_chart']
     pie_chart = json_response['data']['pie_chart']
+    prediction_area_chart = json_response['data']['area_chart']
 
     context = {
+        "prediction_area_chart": prediction_area_chart,
         "pie_chart": pie_chart,
         "area_chart": area_chart,
         "bar_chart": bar_chart,

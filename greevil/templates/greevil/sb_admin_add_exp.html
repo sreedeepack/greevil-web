@@ -9,6 +9,14 @@
 {% block sb_admin_content %}
 
     <script>
+        function makeNavTitleActive (id){
+        document.getElementById(id).className="nav-item active";
+        }
+
+        window.onload = function (){
+        makeNavTitleActive("Add-Expense-nav-item")
+        }
+        
         function SubForm() {
             $("#spinner-pulse").show();
 

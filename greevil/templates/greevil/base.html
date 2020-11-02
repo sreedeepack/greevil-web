@@ -31,7 +31,12 @@
   {% block sb_admin_custom_css %}{% endblock sb_admin_custom_css %}
 
 </head>
-
+<script>
+    // window.onload = function (){
+    // console.log("1")
+    // localStorage.setItem("navBarToggle","false")
+    // }
+</script>
 <body id="page-top">
 
 <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
@@ -42,12 +47,12 @@
   <!-- Navbar Search -->
   <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
     <div class="input-group">
-      <input type="text" class="form-control" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+      <!-- <input type="text" class="form-control" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
       <div class="input-group-append">
         <button class="btn btn-primary" type="button">
           <i class="fas fa-search"></i>
         </button>
-      </div>
+      </div> -->
     </div>
   </form>
 
@@ -79,35 +84,35 @@
 <div id="wrapper"><!-- wrapper -->
 
     <!-- Sidebar -->
-    <ul class="sidebar navbar-nav">
+    <ul class="sidebar navbar-nav" id="sidebarData">
         {% block sb_admin_sidebar %}
-            <li class="nav-item active">
-                <a class="nav-link" href="{% url "sb_admin_dashboard" %}">
+            <li class="nav-item" id="Dashboard-nav-item">
+                <a class="nav-link" href="{% url "sb_admin_dashboard" %}" onclick='$("#spinner-pulse").show();'>
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{% url "sb_admin_add_exp" %}">
+            <li class="nav-item" id="Add-Expense-nav-item">
+                <a class="nav-link" href="{% url "sb_admin_add_exp" %}" onclick='$("#spinner-pulse").show();'>
                     <i class="fas fa-fw fa-plus"></i>
                     <span>Add Expenses</span></a>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{% url "sb_admin_charts" %}">
+            <li class="nav-item" id="Charts-nav-item">
+                <a class="nav-link" href="{% url "sb_admin_charts" %}" onclick='$("#spinner-pulse").show();'>
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Charts</span></a>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{% url "sb_admin_add" %}">
+            <li class="nav-item" id="Add-contacts-nav-item">
+                <a class="nav-link" href="{% url "sb_admin_add" %}" onclick='$("#spinner-pulse").show();'>
                     <i class="fas fa-fw fa-user-plus"></i>
                     <span>Add Contacts</span></a>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{% url "sb_admin_tables" %}">
+            <li class="nav-item" id="Manage-expenses-nav-item">
+                <a class="nav-link" href="{% url "sb_admin_tables" %}" onclick='$("#spinner-pulse").show();'>
                     <i class="fas fa-fw fa-table"></i>
                     <span>Manage Expenses</span></a>
             </li>
@@ -118,8 +123,10 @@
 
             <!-- Loading indicator -->
             {#Loading#}
-            <div id="spinner-pulse" class="loadingio-spinner-pulse center-block">
-                <div class="ldio">
+            <div id="spinner-pulse" class="loadingio-spinner-pulse center-block" style="width: 100%; height: 100%; background-color: black;">
+                <div class="ldio" style="position: absolute; top: 50%;
+                left: 50%;
+                margin: -25px 0 0 -25px;">
                     <div></div>
                     <div></div>
                     <div></div>
