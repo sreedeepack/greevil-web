@@ -236,10 +236,13 @@
 
 
                 } else {
+                    $("#spinner-pulse").hide();
                     window.alert("Error - " + response['data'])
+
                 }
             },
             error: function (err) {
+                $("#spinner-pulse").hide();
                 window.alert(err);
             }
         });
