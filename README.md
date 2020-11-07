@@ -58,7 +58,7 @@ Getting Started
 6. Open http://127.0.0.1:8000/ in a web browser to view the application.
 
 
-7. Setup [greevil-app](https://github.com/Acquil/greevil-app) too for using the application.
+7. Setup [greevil-app](https://github.com/sreedeepack/greevil-app) too for using the application.
 
 ## Other info
 
