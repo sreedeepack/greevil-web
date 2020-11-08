@@ -78,9 +78,11 @@ def login(request):
     """
     Start page with a documentation.
     """
+
     return render(
         request,
         "greevil/login.html",
+        APP_SERVER
     )
 
 
@@ -97,6 +99,29 @@ def register(request):
     return render(
         request,
         "greevil/register.html",
+        APP_SERVER
+    )
+
+
+def forgot_view(request):
+    """
+
+    """
+    return render(
+        request,
+        "greevil/forgot_password.html",
+        APP_SERVER
+    )
+
+
+def forgot_confirm_view(request):
+    """
+
+    """
+    return render(
+        request,
+        "greevil/forgot_confirm.html",
+        APP_SERVER
     )
 
 
@@ -108,6 +133,7 @@ def register_confirm(request):
     return render(
         request,
         "greevil/confirm.html",
+        APP_SERVER
     )
 
 

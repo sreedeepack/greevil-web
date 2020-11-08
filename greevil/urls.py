@@ -1,11 +1,9 @@
 from django.conf.urls import url
-from django.urls import path
-from django.views.generic import TemplateView
 
 import greevil.views
 
 urlpatterns = [
-    # TODO have a different start page?
+
     url(r'^$', greevil.views.dashboard, name='sb_admin_start'),
     # path('register/', TemplateView.as_view(
     #      template_name="greevil/register.html"),
@@ -33,12 +31,15 @@ urlpatterns = [
     url(r'^add/$', greevil.views.add, name='sb_admin_add'),
     url(r'^add/expense/$', greevil.views.add_expense_view, name='sb_admin_add_exp'),
 
-    path('forgot/', TemplateView.as_view(
-        template_name="greevil/forgot_password.html"),
-         name='sb_admin_forgot_password'
-         ),
-    path('forgot/confirm/', TemplateView.as_view(
-        template_name="greevil/forgot_confirm.html"),
-         name='sb_admin_forgot_confirm'
-         ),
+    url(r"^forgot/$", greevil.views.forgot_view, name='sb_admin_forgot_password'),
+    url(r"^forgot/confirm/$", greevil.views.forgot_confirm_view, name='sb_admin_forgot_confirm'),
+
+    # path('forgot/', TemplateView.as_view(
+    #     template_name="greevil/forgot_password.html"),
+    #      name='sb_admin_forgot_password'
+    #      ),
+    # path('forgot/confirm/', TemplateView.as_view(
+    #     template_name="greevil/forgot_confirm.html"),
+    #      name='sb_admin_forgot_confirm'
+    #      ),
 ]
