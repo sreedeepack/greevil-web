@@ -198,7 +198,7 @@
         $.ajax({
             type: "POST",
             //TODO change/pass from settings
-            url: "http://localhost:5000/cognito/login/",
+            url: "{{ APP_SERVER }}/cognito/login/",
             data: JSON.stringify({'email': email, 'password': pwd}),
             dataType: "json",
             contentType: "application/json",

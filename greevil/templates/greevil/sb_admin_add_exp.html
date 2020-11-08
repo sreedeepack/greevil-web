@@ -33,11 +33,12 @@
                     alert(response["Result"])
                     console.log(response);
 
-                    {#window.location.replace("/greevil/add")#}
+                    window.location.replace("/greevil/add/expense")
                 },
                 error: function (response) {
                     $("#spinner-pulse").hide();
                     alert(response["Result"]);
+
                     console.log(response);
                 }
             });
@@ -55,22 +56,23 @@
                 </button>
             </div>
         </div>
+        <!-- Loading indicator -->
+        {#Loading#}
+        <div id="spinner-pulse" class="loadingio-spinner-pulse center-block"
+             style="width: 100%; height: 100%; background-color: black;">
+            <div class="ldio" style="position: absolute; top: 50%;
+            left: 50%;
+            margin: -25px 0 0 -25px;">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
     </div>
 
     <div class="row">
         <div class="col-lg-6 col-md-6">
-            <!-- Loading indicator -->
-            {#Loading#}
-            <div id="spinner-pulse" class="loadingio-spinner-pulse center-block"
-                 style="width: 100%; height: 100%; background-color: black;">
-                <div class="ldio" style="position: absolute; top: 50%;
-                left: 50%;
-                margin: -25px 0 0 -25px;">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
+
             <h3>
                 Add an expense
             </h3>
@@ -134,25 +136,6 @@
                 </div>
 
 
-                <!-- <div class="form-group">
-                    <label>Radio Buttons</label>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>Radio 1
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">Radio 2
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">Radio 3
-                        </label>
-                    </div>
-                </div> -->
-
                 <div class="form-group row">
                     <label for="expense-by-input" class="col-2 col-form-label">Paid by</label>
                     <div class="col-10">
@@ -175,7 +158,7 @@
                 </div>
 
 
-                <button type="submit" class="btn btn-primary btn-block" onclick="SubForm()">Add Expense</button>
+                <button type="button" class="btn btn-primary btn-block" onclick="SubForm()">Add Expense</button>
 
             </form>
 

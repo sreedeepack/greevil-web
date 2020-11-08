@@ -90,7 +90,7 @@
 
 
 <script>
-    {#TODO make it secure#}
+
     let cognitoUserPoolId = "{{ cognitoUserPoolId }}";
     let cognitoUserPoolClientId = "{{ cognitoUserPoolClientId }}";
 
@@ -138,8 +138,8 @@
         
 
         if (pw === confirmPw) {
-            {#TODO change to cognito#}
-            
+
+
             userPool.signUp(email, pw, attributeList, null, function(err, result){
             if (err) {
                     console.log(err)
@@ -151,21 +151,6 @@
                 localStorage.setItem('email', email);
                 window.location.replace('confirm');
             });
-
-            // $.ajax({
-            //     type: "POST",
-            //     url: "http://localhost:5000/cognito/add/",
-            //     data: JSON.stringify({'email': email, "name": firstName}),
-            //     dataType: "json",
-            //     contentType: "application/json",
-            //     success: function (response) {
-            //         localStorage.setItem('email', email);
-            //         window.location.replace('confirm');
-            //     },
-            //     error: function (err) {
-            //         window.alert(err);
-            //     }
-            // });
 
         } else {
             alert('Passwords do not match.')

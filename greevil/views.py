@@ -53,7 +53,7 @@ def add_expense(request):
 
     response = requests.post(f"{APP_SERVER}/expenses/add/", json=data)
 
-    return JsonResponse({'Result': 'Successful'})
+    return JsonResponse({'Result': 'Added Successfully'})
 
 
 @csrf_exempt
@@ -78,11 +78,13 @@ def login(request):
     """
     Start page with a documentation.
     """
-
+    context = {
+        "APP_SERVER": APP_SERVER
+    }
     return render(
         request,
         "greevil/login.html",
-        APP_SERVER
+        context
     )
 
 
@@ -96,10 +98,13 @@ def register(request):
     """
     New user registration page.
     """
+    context = {
+        "APP_SERVER": APP_SERVER
+    }
     return render(
         request,
         "greevil/register.html",
-        APP_SERVER
+        context
     )
 
 
@@ -107,10 +112,13 @@ def forgot_view(request):
     """
 
     """
+    context = {
+        "APP_SERVER": APP_SERVER
+    }
     return render(
         request,
         "greevil/forgot_password.html",
-        APP_SERVER
+        context
     )
 
 
@@ -118,10 +126,13 @@ def forgot_confirm_view(request):
     """
 
     """
+    context = {
+        "APP_SERVER": APP_SERVER
+    }
     return render(
         request,
         "greevil/forgot_confirm.html",
-        APP_SERVER
+        context
     )
 
 
@@ -129,11 +140,13 @@ def register_confirm(request):
     """
     Confirmation with OTP
     """
-
+    context = {
+        "APP_SERVER": APP_SERVER
+    }
     return render(
         request,
         "greevil/confirm.html",
-        APP_SERVER
+        context
     )
 
 
@@ -196,9 +209,6 @@ def charts(request):
     response = requests.post(f"{APP_SERVER}/expenses/stats/predict/", json=data, headers=headers)
     xml_response = response.text
     prediction_area_chart = xml_response
-
-    print("Prediction chart")
-    print(prediction_area_chart)
 
     response = requests.post(f"{APP_SERVER}/expenses/stats/", json=data)
     json_response = response.json()

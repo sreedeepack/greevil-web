@@ -19,26 +19,28 @@
   window.onload = function (){
     makeNavTitleActive("Charts-nav-item")
   }
-</script>
-        <div class="card mb-3">
-          <div class="card-header">
-            <i class="fas fa-chart-area"></i>
-            Forecast</div>
-          <div class="card-body">
-            <!-- <canvaswidth="100%" height="30"></canvas> -->
-            <canvas  id="predictionExpenseAreaChart" width="100%" height="30">  </canvas>
-          </div>
-          <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
-        </div>
+ </script>
+     <div class="card mb-3">
+         <div class="card-header">
+             <i class="fas fa-chart-area"></i>
+             Forecast
+         </div>
+         <div class="card-body">
+             <!-- <canvaswidth="100%" height="30"></canvas> -->
+             <canvas id="predictionExpenseAreaChart" width="100%" height="30"></canvas>
+         </div>
+         <div id="card_status_forecast" class="card-footer small text-muted"></div>
+     </div>
 
-        <!-- Area Chart Example-->
-        <div class="card mb-3">
-          <div class="card-header">
-            <i class="fas fa-chart-area"></i>
-            Expenditure Trend</div>
-          <div class="card-body">
-            <canvas id="expenseAreaChart" width="100%" height="30"></canvas>
-          </div>
+     <!-- Area Chart Example-->
+     <div class="card mb-3">
+         <div class="card-header">
+             <i class="fas fa-chart-area"></i>
+             Expenditure Trend
+         </div>
+         <div class="card-body">
+             <canvas id="expenseAreaChart" width="100%" height="30"></canvas>
+         </div>
           <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
         </div>
 
@@ -72,18 +74,17 @@
 
 
 
-
-
  {% endblock sb_admin_content %}
+
 {% block sb_admin_custom_js %}
 
     {{ area_chart|json_script:"area_chart_data" }}
     {{ pie_chart|json_script:"pie_chart_data" }}
-    {{bar_chart|json_script:"bar_chart_data"}}
+    {{ bar_chart|json_script:"bar_chart_data" }}
     <script>
-      monthly_expense_label = "Money Spent: ";
-      var data = document.getElementById('area_chart_data').textContent;
-      data = JSON.parse(data);
+        monthly_expense_label = "Money Spent: ";
+        var data = document.getElementById('area_chart_data').textContent;
+        data = JSON.parse(data);
       x_labels = Object.keys(data); 
       y_data = [];
       var arrayLength = x_labels.length;
@@ -121,62 +122,57 @@
       var arrayLength = x_labels_bar.length;
       max_y_bar = 0;
       for (var i = 0; i < arrayLength; i++) {
-        y_data_bar[i] = data[x_labels_bar[i]];
-        months[x_labels_bar[i]-1] = y_data_bar[i];
-        if(max_y_bar<y_data_bar[i]){
-          max_y_bar = y_data_bar[i];
-        }
+          y_data_bar[i] = data[x_labels_bar[i]];
+          months[x_labels_bar[i] - 1] = y_data_bar[i];
+          if (max_y_bar < y_data_bar[i]) {
+              max_y_bar = y_data_bar[i];
+          }
       }
     </script>
 
     <script>
-      // data = JSON.parse(data);
-      // x_labels = Object.keys(data); 
-      // y_data = [];
-      // var arrayLength = x_labels.length;
-      // max_y = 0;
-      // for (var i = 0; i < arrayLength; i++) {
-      //   y_data[i] = data[x_labels[i]];
-      //   if(max_y<y_data[i]){
-      //     max_y = y_data[i]
-      //   }
-      // }
-      var data = document.getElementById('prediction_area_chart_data')
-      let xmlString = data.textContent;
-      console.log(xmlString);
-      parser = new DOMParser();
-      xmlDoc = parser.parseFromString(xmlString, "application/xml");
-      var xData = [];
-      var yData = [];
-      var yDataForecast = [];
-      var yDataForecastTop = [];
-      var yDataForecastBottom = [];
-      var pointBackgroundColors = [];
-      var threshHold = 100;
-      var maxForecastY = 0;
-      var xElements = xmlDoc.getElementsByTagName("x");
-      var yElements = xmlDoc.getElementsByTagName("y");
-      var endIndex = Number(xmlDoc.getElementsByTagName("EndIndex")[0].childNodes[0].nodeValue);
-      console.log("EndIndex");
-      console.log(endIndex);
-      for (i = 0; i < xElements.length; i++) {
-        xData.push(xElements[i].childNodes[0].nodeValue);
-        yVal = Number(yElements[i].childNodes[0].nodeValue);
-        if(i < (endIndex-1)){
-          yData.push(yVal);
-          yDataForecast.push(undefined);
-          yDataForecastTop.push(undefined);
-          yDataForecastBottom.push(undefined);
+
+        var data = document.getElementById('prediction_area_chart_data');
+        let xmlString = data.textContent;
+
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(xmlString, "application/xml");
+        let xData = [];
+        let yData = [];
+        let yDataForecast = [];
+        let yDataForecastTop = [];
+        let yDataForecastBottom = [];
+        let pointBackgroundColors = [];
+        const threshHold = 100;
+        let maxForecastY = 0;
+
+        //Check if xml content is present
+        let checkXML = xmlDoc.getElementsByTagName("predict_chart");
+        const checkXMLContent = checkXML.item("predict_chart").textContent;
+        if (checkXMLContent !== null) {
+            document.getElementById("card_status_forecast").innerHTML = checkXMLContent;
         }
-        else if(i > (endIndex-1)){
-          yData.push(undefined);
-          yDataForecast.push(yVal);
-          yDataForecastTop.push(yVal + threshHold);
-          if((yVal - threshHold) < 0){
-            yDataForecastBottom.push(0);
-          }
-          else{
-            yDataForecastBottom.push(yVal-threshHold);
+
+        let xElements = xmlDoc.getElementsByTagName("x");
+        let yElements = xmlDoc.getElementsByTagName("y");
+        let endIndex = Number(xmlDoc.getElementsByTagName("EndIndex")[0].childNodes[0].nodeValue);
+
+        for (i = 0; i < xElements.length; i++) {
+            xData.push(xElements[i].childNodes[0].nodeValue);
+            yVal = Number(yElements[i].childNodes[0].nodeValue);
+            if (i < (endIndex - 1)) {
+                yData.push(yVal);
+                yDataForecast.push(undefined);
+                yDataForecastTop.push(undefined);
+                yDataForecastBottom.push(undefined);
+            } else if (i > (endIndex - 1)) {
+                yData.push(undefined);
+                yDataForecast.push(yVal);
+                yDataForecastTop.push(yVal + threshHold);
+                if ((yVal - threshHold) < 0) {
+                    yDataForecastBottom.push(0);
+                } else {
+                    yDataForecastBottom.push(yVal - threshHold);
           }
         }
         else{
@@ -189,9 +185,6 @@
           maxForecastY = yVal;
         }
       }
-      console.log(xData);
-      console.log(yData)
-      console.log(yDataForecast)           ,
 
       Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
       Chart.defaults.global.defaultFontColor = '#292b2c';
@@ -300,19 +293,8 @@
           }
         }
       });
-      // for (i = 0; i < xElements.length; i++) {
-      //   console.log("Iteraing")
-      //   if(i >= endIndex){
-      //     console.log(myLineChart1.data.datasets[0].data[i]);
-      //     borderCol = 'rgba(255,140,0,1)';
-      //     pointBackgroundColors.push('rgba(255,140,0,1)')
-      //   }
-      //   else{
-      //     borderCol = "rgba(2,117,216,1)";
-      //     pointBackgroundColors.push("rgba(2,117,216,1)");
-      //   }
-      // }
-      myLineChart1.update();
+
+        myLineChart1.update();
 
 
     </script>

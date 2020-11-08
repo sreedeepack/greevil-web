@@ -79,7 +79,7 @@
         $.ajax({
             type: "POST",
             {#TODO change/pass from settings#}
-            url: "{{}}/cognito/login/forget/",
+            url: "{{APP_SERVER}}/cognito/login/forget/",
             data: JSON.stringify({'email': userName, 'code': confirmCode, 'password': password}),
             dataType: "json",
             contentType: "application/json",
