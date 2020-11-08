@@ -162,13 +162,19 @@ def charts(request):
         # "from_date": "2020-10-27",
         # "to_date": "2020-10-27"
     }
+    headers = {
+        'Accept': 'application/xml'
+    }
+    response = requests.post(f"{APP_SERVER}/expenses/stats/predict/", json=data, headers=headers)
+    xml_response = response.content
+    prediction_area_chart = xml_response
+
     response = requests.post(f"{APP_SERVER}/expenses/stats/", json=data)
     json_response = response.json()
 
     area_chart = json_response['data']['area_chart']
     bar_chart = json_response['data']['bar_chart']
     pie_chart = json_response['data']['pie_chart']
-    prediction_area_chart = json_response['data']['area_chart']
 
     context = {
         "prediction_area_chart": prediction_area_chart,

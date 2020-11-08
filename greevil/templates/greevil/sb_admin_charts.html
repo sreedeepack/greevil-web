@@ -77,8 +77,6 @@
     {{area_chart|json_script:"area_chart_data"}}
     {{pie_chart|json_script:"pie_chart_data"}}
     {{bar_chart|json_script:"bar_chart_data"}}
-    {{prediction_area_chart|json_script:"predicton_area_chart_data"}}    
-
 
     <script>
       monthly_expense_label = "Money Spent: ";
@@ -142,9 +140,9 @@
       //   }
       // }
       var data = document.getElementById('predicton_area_chart_data').textContent;
-      var xmlString = "<xml><data><point><x>Jan</x><y>100</y></point><point><x>Feb</x><y>200</y></point><point><x>Mar</x><y>300</y></point><point><x>Apr</x><y>400</y></point><point><x>May</x><y>500</y></point></data><EndIndex>3</EndIndex></xml>";
+      var xmlString = "{{ prediction_area_chart }}";
       parser = new DOMParser();
-      xmlDoc = parser.parseFromString(xmlString,"text/xml");
+      xmlDoc = parser.parseFromString(xmlString, "text/xml");
       var xData = [];
       var yData = [];
       var yDataForecast = [];
