@@ -31,11 +31,14 @@
                     $(".alert").removeClass("d-none");
                     $("#add-expense-result").text(response["Result"])
                     alert(response["Result"])
-                    window.location.replace("/greevil/add")
+                    console.log(response);
+
+                    {#window.location.replace("/greevil/add")#}
                 },
                 error: function (response) {
                     $("#spinner-pulse").hide();
-                    alert(response);
+                    alert(response["Result"]);
+                    console.log(response);
                 }
             });
 
@@ -56,13 +59,45 @@
 
     <div class="row">
         <div class="col-lg-6 col-md-6">
-
+            <!-- Loading indicator -->
+            {#Loading#}
+            <div id="spinner-pulse" class="loadingio-spinner-pulse center-block"
+                 style="width: 100%; height: 100%; background-color: black;">
+                <div class="ldio" style="position: absolute; top: 50%;
+                left: 50%;
+                margin: -25px 0 0 -25px;">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
             <h3>
                 Add an expense
             </h3>
             <hr>
 
             <form role="form" id="add-expense-form">
+                <div class="form-group row">
+                    <label for="expense-for-input" class="col-2 col-form-label">Paid for</label>
+                    <div class="col-10">
+
+                        <select class="form-control" name="expense-for-input">
+
+                            <option value="{{ users }}">
+                                {{ users }}
+                            </option>
+
+
+                            {% for user in friends %}
+                                <option value="{{ user }}">
+                                    {{ user }}
+                                </option>
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+                </div>
 
 
                 <div class="form-group row">
@@ -121,22 +156,21 @@
                 <div class="form-group row">
                     <label for="expense-by-input" class="col-2 col-form-label">Paid by</label>
                     <div class="col-10">
-                        <label>
-                            <select class="form-control" name="expense-by-input">
+                        <select class="form-control" name="expense-by-input">
 
-                                <option value="{{ users }}">
-                                    {{ users }}
+                            <option value="{{ users }}">
+                                {{ users }}
+                            </option>
+
+
+                            {% for user in friends %}
+                                <option value="{{ user }}">
+                                    {{ user }}
                                 </option>
+                            {% endfor %}
 
+                        </select>
 
-                                {% for user in friends %}
-                                    <option value="{{ user }}">
-                                        {{ user }}
-                                    </option>
-                                {% endfor %}
-
-                            </select>
-                        </label>
                     </div>
                 </div>
 

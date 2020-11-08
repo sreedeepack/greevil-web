@@ -5,6 +5,7 @@
     <li class="breadcrumb-item active">
         <i class="fa fa-bar-chart-o"></i>Charts
     </li>
+
 {% endblock sb_admin_breadcrumb_active %}
  {% block sb_admin_content %}
  <script src="{% static "vendor/chart.js/Chart.min.js" %}"></script>
@@ -56,28 +57,29 @@
           <div class="col-lg-4">
             <div class="card mb-3">
               <div class="card-header">
-                <i class="fas fa-chart-pie"></i>
-                Money Owed to contacts</div>
-              <div class="card-body">
-                <canvas id="myPieChart" width="100%" height="100"></canvas>
+                  <i class="fas fa-chart-pie"></i>
+                  Money Owed to contacts
               </div>
-              <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
+                <div class="card-body">
+                    <canvas id="myPieChart" width="100%" height="100"></canvas>
+                </div>
+                <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
             </div>
           </div>
         </div>
 
-        
+     <p style="display: none" id="prediction_area_chart_data">{{ prediction_area_chart }}</p>
 
- 
 
-                
-{% endblock sb_admin_content %}
+
+
+
+ {% endblock sb_admin_content %}
 {% block sb_admin_custom_js %}
 
-    {{area_chart|json_script:"area_chart_data"}}
-    {{pie_chart|json_script:"pie_chart_data"}}
+    {{ area_chart|json_script:"area_chart_data" }}
+    {{ pie_chart|json_script:"pie_chart_data" }}
     {{bar_chart|json_script:"bar_chart_data"}}
-
     <script>
       monthly_expense_label = "Money Spent: ";
       var data = document.getElementById('area_chart_data').textContent;
@@ -139,10 +141,11 @@
       //     max_y = y_data[i]
       //   }
       // }
-      var data = document.getElementById('predicton_area_chart_data').textContent;
-      var xmlString = "{{ prediction_area_chart }}";
+      var data = document.getElementById('prediction_area_chart_data')
+      let xmlString = data.textContent;
+      console.log(xmlString);
       parser = new DOMParser();
-      xmlDoc = parser.parseFromString(xmlString, "text/xml");
+      xmlDoc = parser.parseFromString(xmlString, "application/xml");
       var xData = [];
       var yData = [];
       var yDataForecast = [];
@@ -259,22 +262,22 @@
               pointHoverRadius: 5,
               pointHitRadius: 50,
               pointBorderWidth: 2,
-              pointBorderColor:  "rgba(255,255,255,0.8)",
+              pointBorderColor: "rgba(255,255,255,0.8)",
               pointBackgroundColor: "rgba(2,117,216,1)",
               pointHoverBackgroundColor: "rgba(2,117,216,1)",
               lineTension: 0.3,
 
-          }        
-        ]
+          }
+          ]
         },
-        
-        options: {
-          scales: {
-            xAxes: [{
-              time: {
-                unit: 'date'
-              },
-              gridLines: {
+
+          options: {
+              scales: {
+                  xAxes: [{
+                      time: {
+                          unit: 'date'
+                      },
+                      gridLines: {
                 display: false
               },
               ticks: {
@@ -310,7 +313,7 @@
       //   }
       // }
       myLineChart1.update();
-      
+
 
     </script>
 

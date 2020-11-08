@@ -41,16 +41,18 @@ def add_expense(request):
     # email = get_email(request)
     email = request.session['email']
     data = {
-        "email": email,
+        "email": request.POST.get('expense-for-input'),
         "amount": request.POST.get('expense-amount-input'),
         'date': request.POST.get('expense-date-input'),
         'description': request.POST.get('expense-description-input'),
         'comments': request.POST.get('expense-comments-input'),
         'payor': request.POST.get('expense-by-input')
     }
-    print(f"data => {data}")
+    if data['email'] == data['payor'] and data['email'] != email:
+        return JsonResponse({"Result": "Sorry! You cannot do that!"})
+
     response = requests.post(f"{APP_SERVER}/expenses/add/", json=data)
-    print(response.json())
+
     return JsonResponse({'Result': 'Successful'})
 
 
@@ -163,11 +165,14 @@ def charts(request):
         # "to_date": "2020-10-27"
     }
     headers = {
-        'Accept': 'application/xml'
+        'Accept': 'application/xml',
     }
     response = requests.post(f"{APP_SERVER}/expenses/stats/predict/", json=data, headers=headers)
-    xml_response = response.content
+    xml_response = response.text
     prediction_area_chart = xml_response
+
+    print("Prediction chart")
+    print(prediction_area_chart)
 
     response = requests.post(f"{APP_SERVER}/expenses/stats/", json=data)
     json_response = response.json()
@@ -177,7 +182,7 @@ def charts(request):
     pie_chart = json_response['data']['pie_chart']
 
     context = {
-        "prediction_area_chart": prediction_area_chart,
+        "prediction_area_chart": str(prediction_area_chart),
         "pie_chart": pie_chart,
         "area_chart": area_chart,
         "bar_chart": bar_chart,
