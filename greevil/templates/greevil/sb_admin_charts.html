@@ -147,11 +147,18 @@
         let maxForecastY = 0;
 
         //Check if xml content is present
-        let checkXML = xmlDoc.getElementsByTagName("predict_chart");
-        const checkXMLContent = checkXML.item("predict_chart").textContent;
-        if (checkXMLContent !== null) {
+        try{
+          let checkXML = xmlDoc.getElementsByTagName("predict_chart");
+          const checkXMLContent = checkXML.item("predict_chart").textContent;
+          if (checkXMLContent !== null) {
             document.getElementById("card_status_forecast").innerHTML = checkXMLContent;
         }
+        }
+        catch(err){
+          console.log("Insuff")
+          console.log(err);
+        }
+
 
         let xElements = xmlDoc.getElementsByTagName("x");
         let yElements = xmlDoc.getElementsByTagName("y");
