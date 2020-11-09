@@ -1,4 +1,4 @@
-APP_SERVER = "http://localhost:5000"
+APP_SERVER = "http://34.229.62.221/"
 
 
 class AWS:
