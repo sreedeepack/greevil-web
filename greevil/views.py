@@ -1,271 +1,190 @@
-import datetime
-import hashlib
-import time
-
-import boto3
-import pandas as pd
-from botocore.exceptions import ClientError
+import requests
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
+from greevil.settings import APP_SERVER
 
-def query_user(email, dynamodb=None):
-    if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', region_name="us-east-1")
 
-    table = dynamodb.Table('greevil-users')
-    response = table.get_item(
-        Key={'CustomerId': email}
-    )
-    return response['Item']
+def get_email(request):
+    """
+    Return email session value
+    :param request:
+    :return: session email
+    """
+    return request.session['email']
 
 
 @csrf_exempt
-def add_friend(request, dynamodb=None):
-    email = request.POST.get('add-friend-email-input')
+def add_friend(request):
+    """
+    To add friends
+    :param request:
+    :return:
+    """
+    friend_id = request.POST.get('add-friend-email-input')
     id = request.session['email']
+    data = {
+        "your_id": id,
+        "friend_id": friend_id
+    }
+    response = requests.post(f"{APP_SERVER}/user/add/friend/", json=data)
+    print(response)
+    json_response = response.json()
+    exp_list = json_response['data']
+    return JsonResponse({'Result': 'Added Successfully'})
 
-    if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', region_name="us-east-1")
 
-    db_user = query_user(email)
-    db_source = query_user(id)
-    if db_user == []:
-        return JsonResponse({'Result': 'No users Found'})
-    elif email == id or email in db_source[0]['Friends']:
-        return JsonResponse({'Result': 'Already exists!'})
+@csrf_exempt
+def add_expense(request):
+    print("Django add_expense")
+    # email = get_email(request)
+    email = request.session['email']
+    data = {
+        "email": request.POST.get('expense-for-input'),
+        "amount": request.POST.get('expense-amount-input'),
+        'date': request.POST.get('expense-date-input'),
+        'description': request.POST.get('expense-description-input'),
+        'comments': request.POST.get('expense-comments-input'),
+        'payor': request.POST.get('expense-by-input')
+    }
+    if data['email'] == data['payor'] and data['email'] != email:
+        return JsonResponse({"Result": "Sorry! You cannot do that!"})
 
-    table = dynamodb.Table('greevil-users')
-
-    response = table.update_item(
-        Key={
-            'CustomerId': id
-        },
-        UpdateExpression="set Friends = list_append(if_not_exists(Friends,:empty_list), :i)",
-        ExpressionAttributeValues={
-            ':i': [email],
-            ':empty_list': []
-        },
-        ReturnValues="UPDATED_NEW"
-    )
-
-    response = table.update_item(
-        Key={
-            'CustomerId': email
-        },
-        UpdateExpression="set Friends = list_append(if_not_exists(Friends,:empty_list), :i)",
-        ExpressionAttributeValues={
-            ':i': [id],
-            ':empty_list': []
-        },
-        ReturnValues="UPDATED_NEW"
-    )
+    response = requests.post(f"{APP_SERVER}/expenses/add/", json=data)
 
     return JsonResponse({'Result': 'Added Successfully'})
 
 
-def add_expense_user_helper(dynamodb, by_id, for_id, h):
-    table = dynamodb.Table('greevil-users')
-
-    response = table.update_item(
-        Key={
-            'CustomerId': for_id
-        },
-        UpdateExpression="set Expenses = list_append(if_not_exists(Expenses,:empty_list), :i)",
-        ExpressionAttributeValues={
-            ':i': [h],
-            ':empty_list': []
-        },
-        ReturnValues="UPDATED_NEW"
-    )
-
-    # Paid by someone else
-    if by_id != for_id:
-        response = table.update_item(
-            Key={
-                'CustomerId': by_id
-            },
-            UpdateExpression="set Expenses = list_append(if_not_exists(Expenses,:empty_list), :i)",
-            ExpressionAttributeValues={
-                ':i': [h],
-                ':empty_list': []
-            },
-            ReturnValues="UPDATED_NEW"
-        )
-
-
-# POST data
 @csrf_exempt
-def add_expense(request, dynamodb=None):
-    if request.method == "POST":
-        email = request.session['email']
-        s = str(time.time()) + str(email)
-        h = hashlib.md5(s.encode('utf-8')).hexdigest()
-
-        if not dynamodb:
-            dynamodb = boto3.resource('dynamodb', region_name="us-east-1")
-
-        table = dynamodb.Table('greevil-expenses')
-
-        response = table.put_item(
-            Item={
-                'ExpenseId': h,
-                'Amount': request.POST.get('expense-amount-input'),
-                'Date': request.POST.get('expense-date-input'),
-                'Description': request.POST.get('expense-description-input'),
-                'Comments': request.POST.get('expense-comments-input'),
-                'For': email,
-                'By': request.POST.get('expense-by-input')
-            }
-        )
-        add_expense_user_helper(dynamodb, request.POST.get('expense-by-input'), email, h)
-        # return render("greevil/tables.html")
-        return JsonResponse({'Result': 'Successful'})
-
-
-    else:
-        return JsonResponse({'Result': 'Invalid Request'})
-
-
-def query_expenses(expense_id, dynamodb=None):
-    if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', region_name="us-east-1")
-
-    table = dynamodb.Table('greevil-expenses')
-    response = table.get_item(
-        Key={'ExpenseId': expense_id}
-    )
-    return response['Item']
-
-
-@csrf_exempt
-def delete_expense(request, dynamodb=None):
+def delete_expense(request):
     email = request.session['email']
     id = request.POST.get('id')
-    if not dynamodb:
-        dynamodb = boto3.resource('dynamodb', region_name="us-east-1")
-
-    table = dynamodb.Table('greevil-expenses')
-
-    response = query_expenses(id, dynamodb)
-    by_id = response["By"]
-    for_id = response["For"]
-    print("part 1")
-    by_id_expenses = query_user(by_id, dynamodb)["Expenses"]
-    for_id_expenses = query_user(for_id, dynamodb)["Expenses"]
-    by_id_expenses.remove(id)
-    for_id_expenses.remove(id)
-    print("part 2")
-
-    try:
-        table.delete_item(
-            Key={
-                'ExpenseId': id
-            }
-        )
-        print("part 3")
-
-        # Remove from users
-        table = dynamodb.Table('greevil-users')
-        table.update_item(
-            Key={
-                'CustomerId': for_id
-            },
-            UpdateExpression="set Expenses = :i",
-            ExpressionAttributeValues={
-                ':i': for_id_expenses,
-            },
-            ReturnValues="UPDATED_NEW"
-        )
-        if by_id != for_id:
-            table.update_item(
-                Key={
-                    'CustomerId': by_id
-                },
-                UpdateExpression="set Expenses = :i",
-                ExpressionAttributeValues={
-                    ':i': by_id_expenses,
-                },
-                ReturnValues="UPDATED_NEW"
-            )
-
-
-    except ClientError as e:
-        print(e.response['Error']['Message'])
-        return JsonResponse({'Result': 'Invalid Request'})
+    data = {"id": id}
+    response = requests.post(f"{APP_SERVER}/expenses/delete/", json=data)
 
     return JsonResponse({'Result': 'Success'})
 
 
 @csrf_exempt
 def start(request):
-    print("start")
-    print(request.method)
-
-    # if not request.is_ajax() or not request.method=='POST':
-    #     return JsonResponse({'Result':'Forbidden'})
-
-    # return HttpResponseNotAllowed(['POST'])
-
     request.session['email'] = request.POST.get('id')
     print("Request session success with", request.POST.get('id'))
+    print(f"And request.session[email]={request.session['email']}")
     return JsonResponse({'Result': 'Success'})
-
-    # """Start page with a documentation.
-    # """
-    # email = email_id
-    # return render(
-    #     request,
-    #     "greevil/start.html",
-    #     {
-    #         "nav_active": "start"
-    #     }
-    # )
 
 
 def login(request):
-    """Start page with a documentation.
     """
+    Start page with a documentation.
+    """
+    context = {
+        "APP_SERVER": APP_SERVER
+    }
     return render(
         request,
-        "greevil/login.html"
+        "greevil/login.html",
+        context
+    )
+
+
+def logout(request):
+    """
+    Logout
+    """
+
+
+def register(request):
+    """
+    New user registration page.
+    """
+    context = {
+        "APP_SERVER": APP_SERVER
+    }
+    return render(
+        request,
+        "greevil/register.html",
+        context
+    )
+
+
+def forgot_view(request):
+    """
+
+    """
+    context = {
+        "APP_SERVER": APP_SERVER
+    }
+    return render(
+        request,
+        "greevil/forgot_password.html",
+        context
+    )
+
+
+def forgot_confirm_view(request):
+    """
+
+    """
+    context = {
+        "APP_SERVER": APP_SERVER
+    }
+    return render(
+        request,
+        "greevil/forgot_confirm.html",
+        context
+    )
+
+
+def register_confirm(request):
+    """
+    Confirmation with OTP
+    """
+    context = {
+        "APP_SERVER": APP_SERVER
+    }
+    return render(
+        request,
+        "greevil/confirm.html",
+        context
     )
 
 
 def dashboard(request):
-    """Dashboard page.
     """
-    email = request.session['email']
-    l = []
-    for expenses in query_user(email)['Expenses']:
-        l.append(query_expenses(expenses))
-    df = pd.DataFrame(l).sort_values('Date')
-    df['Amount'] = pd.to_numeric(df['Amount'])
-    df['Month'] = pd.to_numeric(df["Date"].apply(lambda x: x[5:7]))
-    df['Year'] = pd.to_numeric(df["Date"].apply(lambda x: x[0:4]))
-    df['Day'] = pd.to_numeric(df["Date"].apply(lambda x: x[8:10]))
+    Dashboard page.
+    """
+    email = get_email(request)
 
-    now = datetime.datetime.now()
-    area_chart = df[df['Year'] == now.year].groupby(['Date'])['Amount'].sum()
-    # bar_chart = df.groupby(['Month'])['Amount'].sum()
+    data = {
+        "email": email,
+        # "from_date": "2020-10-27",
+        # "to_date": "2020-10-27"
+    }
+    response = requests.post(f"{APP_SERVER}/expenses/stats/", json=data)
+    json_response = response.json()
+    exp_list = json_response['data']['exp_list']
 
-    new_expenses = df[(df['Year'] == now.year) & (df['Month'] == now.month) & (df['Day'] == now.day)]['Amount'].sum()
-    monthly_expenses = df[(df['Year'] == now.year) & (df['Month'] == now.month)]['Amount'].sum()
+    area_chart = json_response['data']['area_chart']
+    bar_chart = json_response['data']['bar_chart']
 
-    friends_amount = df[(df['By'] != email) & (df['For'] == email)]['Amount'].sum()
-    owed_amount = df[('By' == email) & (df['For'] != email)]['Amount'].sum()
+    new_expenses = json_response['data']['new_expenses']
+    monthly_expenses = json_response['data']['monthly_expenses']
+
+    friends_amount = json_response['data']['friends_amount']
+    owed_amount = json_response['data']['owed_amount']
 
     context = {
         "monthly_expense": monthly_expenses,
         "friends_payment": friends_amount,
         "owed_amount": owed_amount,
         "new_expenses": new_expenses,
-        "area_chart": area_chart.to_dict(),
-        # "area_chart_y":area_chart.to_dict(),
-        "expenses": l,
+        "area_chart": area_chart,
+        "area_chart_y": area_chart,
+        "expenses": exp_list,
         "nav_active": "dashboard"
     }
+
     return render(
         request,
         "greevil/sb_admin_dashboard.html",
@@ -274,34 +193,40 @@ def dashboard(request):
 
 
 def charts(request):
-    """Charts page.
     """
-    email = request.session['email']
-    l = []
-    for expenses in query_user(email)['Expenses']:
-        l.append(query_expenses(expenses))
+    Charts page.
+    """
+    email = get_email(request)
 
-    df = pd.DataFrame(l).sort_values('Date')
-    df['Amount'] = pd.to_numeric(df['Amount'])
-    df['Month'] = pd.to_numeric(df["Date"].apply(lambda x: x[5:7]))
-    df['Year'] = pd.to_numeric(df["Date"].apply(lambda x: x[0:4]))
-    df['Day'] = pd.to_numeric(df["Date"].apply(lambda x: x[8:10]))
+    data = {
+        "email": email,
+        # "from_date": "2020-10-27",
+        # "to_date": "2020-10-27"
+    }
+    headers = {
+        'Accept': 'application/xml',
+    }
+    response = requests.post(f"{APP_SERVER}/expenses/stats/predict/", json=data, headers=headers)
+    xml_response = response.text
+    prediction_area_chart = xml_response
 
-    now = datetime.datetime.now()
+    response = requests.post(f"{APP_SERVER}/expenses/stats/", json=data)
+    json_response = response.json()
 
-    area_chart = df[df['Year'] == now.year].groupby(['Date'])['Amount'].sum()
-    bar_chart = df.groupby(['Month'])['Amount'].sum()
-
-    friends_amount = df[(df['By'] != email) & (df['For'] == email)].groupby(['By'])['Amount'].sum()
+    area_chart = json_response['data']['area_chart']
+    bar_chart = json_response['data']['bar_chart']
+    pie_chart = json_response['data']['pie_chart']
 
     context = {
-        "pie_chart": friends_amount.to_dict,
-        "area_chart": area_chart.to_dict(),
-        "bar_chart": bar_chart.to_dict(),
+        "prediction_area_chart": str(prediction_area_chart),
+        "pie_chart": pie_chart,
+        "area_chart": area_chart,
+        "bar_chart": bar_chart,
         "nav_active": "charts"
     }
 
-    return render(request, "greevil/sb_admin_charts.html",
+    return render(request,
+                  "greevil/sb_admin_charts.html",
                   context)
 
 
@@ -309,11 +234,11 @@ def tables(request):
     """Tables page.
     """
     email = request.session['email']
-    expense_list = []
-    # print(query_user(email)['Expenses'])
-    for expenses in query_user(email)['Expenses']:
-        expense_list.append(query_expenses(expenses))
-    # print(expense_list)
+    data = {"email": email, }
+    response = requests.post(f"{APP_SERVER}/user/view/expenses/", json=data)
+    json_response = response.json()
+    expense_list = json_response['data']
+
     context = {
         "nav_active": "tables",
         "expenses": expense_list
@@ -332,6 +257,7 @@ def forms(request):
 def bootstrap_elements(request):
     """Bootstrap elements page.
     """
+
     return render(request, "greevil/sb_admin_bootstrap_elements.html",
                   {"nav_active": "bootstrap_elements"})
 
@@ -343,11 +269,20 @@ def bootstrap_grid(request):
                   {"nav_active": "bootstrap_grid"})
 
 
-def dropdown(request):
-    """Dropdown  page.
+def handler404(request, exception, template_name="greevil/404.html"):
+    """Custom 404  page.
     """
-    return render(request, "greevil/sb_admin_dropdown.html",
-                  {"nav_active": "dropdown"})
+    response = render(request, template_name)
+    response.status_code = 404
+    return response
+
+
+def handler500(request, exception, template_name="greevil/500.html"):
+    """Custom 500  page.
+    """
+    response = render(request, template_name)
+    response.status_code = 500
+    return response
 
 
 def rtl_dashboard(request):
@@ -357,16 +292,43 @@ def rtl_dashboard(request):
                   {"nav_active": "rtl_dashboard"})
 
 
-def blank(request):
-    """Blank page.
+def add(request):
+    """.
+    Adding friends?
     """
-    print(request.session["email"])
-    user_details = query_user(request.session["email"])
-    friends = user_details['Friends']
+    email = request.session["email"]
+
+    response = requests.post(f"{APP_SERVER}/user/search/", json={"email": email})
+    json_response = response.json()
+
+    user_details = json_response['data']
+    friends = user_details['friend_ids']
+
     context = {
-        'users': user_details['Email'],
+        'users': email,
         'friends': friends,
-        "nav_active": "blank"
+        "nav_active": "add"
     }
-    return render(request, "greevil/sb_admin_blank.html",
+    return render(request, "greevil/sb_admin_add.html",
+                  context)
+
+
+def add_expense_view(request):
+    """.
+    Adding expenses
+    """
+    email = request.session["email"]
+
+    response = requests.post(f"{APP_SERVER}/user/search/", json={"email": email})
+    json_response = response.json()
+
+    user_details = json_response['data']
+    friends = user_details['friend_ids']
+
+    context = {
+        'users': email,
+        'friends': friends,
+        "nav_active": "add"
+    }
+    return render(request, "greevil/sb_admin_add_exp.html",
                   context)

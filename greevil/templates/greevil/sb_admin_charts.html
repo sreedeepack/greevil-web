@@ -2,22 +2,45 @@
 {% block sb_admin_custom_css %}{% endblock sb_admin_custom_css %}
 {% block sb_admin_subheading %}{% endblock sb_admin_subheading %}
 {% block sb_admin_breadcrumb_active %}
- <li class="breadcrumb-item active">
-      <i class="fa fa-bar-chart-o""></i>Charts
- </li>
+    <li class="breadcrumb-item active">
+        <i class="fa fa-bar-chart-o"></i>Charts
+    </li>
+
 {% endblock sb_admin_breadcrumb_active %}
  {% block sb_admin_content %}
+ <script src="{% static "vendor/chart.js/Chart.min.js" %}"></script>
+ <script src="{% static "js/demo/chart-forecast.js" %}"></script>
 
 
+ <script>
+  function makeNavTitleActive (id){
+    document.getElementById(id).className="nav-item active";
+  }
+  window.onload = function (){
+    makeNavTitleActive("Charts-nav-item")
+  }
+ </script>
+     <div class="card mb-3">
+         <div class="card-header">
+             <i class="fas fa-chart-area"></i>
+             Forecast
+         </div>
+         <div class="card-body">
+             <!-- <canvaswidth="100%" height="30"></canvas> -->
+             <canvas id="predictionExpenseAreaChart" width="100%" height="30"></canvas>
+         </div>
+         <div id="card_status_forecast" class="card-footer small text-muted"></div>
+     </div>
 
-        <!-- Area Chart Example-->
-        <div class="card mb-3">
-          <div class="card-header">
-            <i class="fas fa-chart-area"></i>
-            Expenditure Trend</div>
-          <div class="card-body">
-            <canvas id="expenseAreaChart" width="100%" height="30"></canvas>
-          </div>
+     <!-- Area Chart Example-->
+     <div class="card mb-3">
+         <div class="card-header">
+             <i class="fas fa-chart-area"></i>
+             Expenditure Trend
+         </div>
+         <div class="card-body">
+             <canvas id="expenseAreaChart" width="100%" height="30"></canvas>
+         </div>
           <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
         </div>
 
@@ -36,30 +59,32 @@
           <div class="col-lg-4">
             <div class="card mb-3">
               <div class="card-header">
-                <i class="fas fa-chart-pie"></i>
-                Money Owed to contacts</div>
-              <div class="card-body">
-                <canvas id="myPieChart" width="100%" height="100"></canvas>
+                  <i class="fas fa-chart-pie"></i>
+                  Money Owed to contacts
               </div>
-              <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
+                <div class="card-body">
+                    <canvas id="myPieChart" width="100%" height="100"></canvas>
+                </div>
+                <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
             </div>
           </div>
         </div>
 
- 
+     <p style="display: none" id="prediction_area_chart_data">{{ prediction_area_chart }}</p>
 
-                
-{% endblock sb_admin_content %}
+
+
+ {% endblock sb_admin_content %}
+
 {% block sb_admin_custom_js %}
 
-    {{area_chart|json_script:"area_chart_data"}}
-    {{pie_chart|json_script:"pie_chart_data"}}
-    {{bar_chart|json_script:"bar_chart_data"}}
-    
+    {{ area_chart|json_script:"area_chart_data" }}
+    {{ pie_chart|json_script:"pie_chart_data" }}
+    {{ bar_chart|json_script:"bar_chart_data" }}
     <script>
-      monthly_expense_label = "Money Spent: ";
-      var data = document.getElementById('area_chart_data').textContent;
-      data = JSON.parse(data);
+        monthly_expense_label = "Money Spent: ";
+        var data = document.getElementById('area_chart_data').textContent;
+        data = JSON.parse(data);
       x_labels = Object.keys(data); 
       y_data = [];
       var arrayLength = x_labels.length;
@@ -88,25 +113,205 @@
     <script>
       var data = document.getElementById('bar_chart_data').textContent;
       data = JSON.parse(data);
-      
+      console.log(data)
       x_labels_bar = Object.keys(data); 
+      console.log(x_labels_bar)
       months = [0,0,0,0,0,0,0,0,0,0,0,0]
       y_data_bar = [];
 
       var arrayLength = x_labels_bar.length;
       max_y_bar = 0;
       for (var i = 0; i < arrayLength; i++) {
-        y_data_bar[i] = data[x_labels_bar[i]];
-        months[x_labels_bar[i]] = y_data_bar[i];
-        if(max_y_bar<y_data_bar[i]){
-          max_y_bar = y_data_bar[i];
-        }
+          y_data_bar[i] = data[x_labels_bar[i]];
+          months[x_labels_bar[i] - 1] = y_data_bar[i];
+          if (max_y_bar < y_data_bar[i]) {
+              max_y_bar = y_data_bar[i];
+          }
       }
     </script>
 
-  <script src="{% static "vendor/chart.js/Chart.min.js" %}"></script>
+    <script>
+
+        var data = document.getElementById('prediction_area_chart_data');
+        let xmlString = data.textContent;
+
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(xmlString, "application/xml");
+        let xData = [];
+        let yData = [];
+        let yDataForecast = [];
+        let yDataForecastTop = [];
+        let yDataForecastBottom = [];
+        let pointBackgroundColors = [];
+        const threshHold = 100;
+        let maxForecastY = 0;
+
+        //Check if xml content is present
+        try{
+          let checkXML = xmlDoc.getElementsByTagName("predict_chart");
+          const checkXMLContent = checkXML.item("predict_chart").textContent;
+          if (checkXMLContent !== null) {
+            document.getElementById("card_status_forecast").innerHTML = checkXMLContent;
+        }
+        }
+        catch(err){
+          console.log("Insuff")
+          console.log(err);
+        }
+
+
+        let xElements = xmlDoc.getElementsByTagName("x");
+        let yElements = xmlDoc.getElementsByTagName("y");
+        let endIndex = Number(xmlDoc.getElementsByTagName("EndIndex")[0].childNodes[0].nodeValue);
+
+        for (i = 0; i < xElements.length; i++) {
+            xData.push(xElements[i].childNodes[0].nodeValue);
+            yVal = Number(yElements[i].childNodes[0].nodeValue);
+            if (i < (endIndex - 1)) {
+                yData.push(yVal);
+                yDataForecast.push(undefined);
+                yDataForecastTop.push(undefined);
+                yDataForecastBottom.push(undefined);
+            } else if (i > (endIndex - 1)) {
+                yData.push(undefined);
+                yDataForecast.push(yVal);
+                yDataForecastTop.push(yVal + threshHold);
+                if ((yVal - threshHold) < 0) {
+                    yDataForecastBottom.push(0);
+                } else {
+                    yDataForecastBottom.push(yVal - threshHold);
+          }
+        }
+        else{
+          yData.push(yVal);
+          yDataForecast.push(yVal);
+          yDataForecastTop.push(yVal);
+          yDataForecastBottom.push(yVal);
+        }
+        if(maxForecastY < yVal){
+          maxForecastY = yVal;
+        }
+      }
+
+      Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+      Chart.defaults.global.defaultFontColor = '#292b2c';
+
+      // Area Chart Example
+      var ctx1 = document.getElementById("predictionExpenseAreaChart");
+      var myLineChart1 = new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: xData,
+          datasets: [{
+              label: "Forecast",
+              backgroundColor:"transparent",
+              data: yDataForecast,
+              borderColor: 'rgba(255,140,0,1)',
+              // borderDash: [20, 30],
+              pointBackgroundColor: "transparent",
+              pointRadius: 5,
+              pointHoverRadius: 5,
+              pointHitRadius: 50,
+              pointBorderWidth: 2,
+              pointBorderColor:  "rgba(255,255,255,0.8)",
+              pointBackgroundColor: 'rgba(255,140,0,1)',
+              pointHoverBackgroundColor: 'rgba(255,140,0,1)',
+              lineTension: 0.3,
+
+          },{
+              label: "Upper Confidence Bound",
+              borderWidth:1,
+              backgroundColor:"transparent",
+              data: yDataForecastTop,
+              borderColor: 'rgba(255,153,51,1)',
+              // borderDash: [20, 30],
+              pointBackgroundColor: "transparent",
+              pointRadius: 3,
+              pointHoverRadius: 3,
+              pointHitRadius: 30,
+              pointBorderWidth: 2,
+              pointBorderColor:  "rgba(255,255,255,0.8)",
+              pointBackgroundColor: 'rgba(255,153,51,1)',
+              pointHoverBackgroundColor: 'rgba(255,153,51,1)',
+              lineTension: 0.3,
+
+          },{
+              label: "Lower Confidence Bound",
+              borderWidth:1,
+              backgroundColor:"transparent",
+              data: yDataForecastBottom,
+              borderColor: 'rgba(255,153,51,1)',
+              // borderDash: [20, 30],
+              pointBackgroundColor: "transparent",
+              pointRadius: 3,
+              pointHoverRadius: 3,
+              pointHitRadius: 30,
+              pointBorderWidth: 2,
+              pointBorderColor:  "rgba(255,255,255,0.8)",
+              pointBackgroundColor: 'rgba(255,153,51,1)',
+              pointHoverBackgroundColor: 'rgba(255,153,51,1)',
+              lineTension: 0.3,
+
+          },{
+              label: "Money Spent",
+              backgroundColor:"transparent",
+              data: yData,
+              borderColor: "rgba(2,117,216,1)",
+              pointBackgroundColor: "transparent",
+              pointRadius: 5,
+              pointHoverRadius: 5,
+              pointHitRadius: 50,
+              pointBorderWidth: 2,
+              pointBorderColor: "rgba(255,255,255,0.8)",
+              pointBackgroundColor: "rgba(2,117,216,1)",
+              pointHoverBackgroundColor: "rgba(2,117,216,1)",
+              lineTension: 0.3,
+
+          }
+          ]
+        },
+
+          options: {
+              scales: {
+                  xAxes: [{
+                      time: {
+                          unit: 'date'
+                      },
+                      gridLines: {
+                display: false
+              },
+              ticks: {
+                maxTicksLimit: 20
+              }
+            }],
+            yAxes: [{
+              ticks: {
+                min: 0,
+                max: maxForecastY + 200,
+                maxTicksLimit: 5
+              },
+              gridLines: {
+                color: "rgba(0, 0, 0, .125)",
+              }
+            }],
+          },
+          legend: {
+            display: false
+          }
+        }
+      });
+
+        myLineChart1.update();
+
+
+    </script>
+
+   
+
   <script src="{% static "js/demo/chart-area-demo.js" %}"></script>
   <script src="{% static "js/demo/chart-bar-demo.js" %}"></script>
   <script src="{% static "js/demo/chart-pie-demo.js" %}"></script>
+ 
+
 
 {% endblock sb_admin_custom_js %}

@@ -82,74 +82,79 @@
   <!-- Core plugin JavaScript-->
   <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
   <!-- Cognito -->
-  <script src="{%static "js/aws-cognito-sdk.min.js" %}"></script>
-  <script src="{%static "js/amazon-cognito-identity.min.js" %}"></script>
+  <script src="{% static "js/aws-cognito-sdk.min.js" %}"></script>
+  <script src="{% static "js/amazon-cognito-identity.min.js" %}"></script>
 
 
-  
 </body>
 
 
 <script>
-  var cognitoUserPoolId = "us-east-1_RthhXV3XY";
-  var cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
 
-    $(document).on('click', '.btn-block', function(event) {
-      event.preventDefault();
+    let cognitoUserPoolId = "{{ cognitoUserPoolId }}";
+    let cognitoUserPoolClientId = "{{ cognitoUserPoolClientId }}";
 
-      var poolData = {
-        UserPoolId : cognitoUserPoolId,
-        ClientId : cognitoUserPoolClientId
-      };
-      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+    $(document).on('click', '.btn-block', function (event) {
+        event.preventDefault();
+        
+        let poolData = {
+            UserPoolId: cognitoUserPoolId,
+            ClientId: cognitoUserPoolClientId
+        };
+        let userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-      var attributeList = [];
+        let attributeList = [];
+        
+
+        let email = document.getElementById('inputEmail').value;
+        let firstName = document.getElementById('firstName').value;
+        let lastName = document.getElementById('lastName').value;
+
+        let pw = document.getElementById('inputPassword').value;
+        let confirmPw = document.getElementById('confirmPassword').value;
+        let dataEmail = {
+            Name: 'email',
+            Value: email
+        };
+
+        let dataFirstName = {
+            Name: 'name',
+            Value: firstName
+        };
+        let dataLastName = {
+            Name: 'family_name',
+            Value: lastName
+        };
+
+        
+        let attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
+        let attributeFirstName = new AmazonCognitoIdentity.CognitoUserAttribute(dataFirstName);
+        let attributeLastName = new AmazonCognitoIdentity.CognitoUserAttribute(dataLastName);
 
 
-      var email = document.getElementById('inputEmail').value;
-      var firstName = document.getElementById('firstName').value;
-      var lastName = document.getElementById('lastName').value;
-      
-      var pw = document.getElementById('inputPassword').value;
-      var confirmPw = document.getElementById('confirmPassword').value;
-      var dataEmail = {
-          Name : 'email',
-          Value : email
-      };
+        attributeList.push(attributeEmail);
+        attributeList.push(attributeFirstName);
+        attributeList.push(attributeLastName);
+        
 
-      var dataFirstName = {
-          Name : 'name',
-          Value : firstName
-      };
-      var dataLastName = {
-          Name : 'family_name',
-          Value : lastName
-      };
-
-      var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
-      var attributeFirstName = new AmazonCognitoIdentity.CognitoUserAttribute(dataFirstName);
-      var attributeLastName = new AmazonCognitoIdentity.CognitoUserAttribute(dataLastName);
+        if (pw === confirmPw) {
 
 
-      attributeList.push(attributeEmail);
-      attributeList.push(attributeFirstName);
-      attributeList.push(attributeLastName);
-
-      if (pw === confirmPw) {
-        userPool.signUp(email, pw, attributeList, null, function(err, result){
+            userPool.signUp(email, pw, attributeList, null, function(err, result){
             if (err) {
-                alert(err.message);
+                    console.log(err)
+                    alert(err.message);
                 return;
             }
-            cognitoUser = result.user;
-            console.log(cognitoUser);
-            localStorage.setItem('email', email);
-            window.location.replace('confirm');
-        });
-      } else {
-        alert('Passwords do not match.')
-      }
+                let cognitoUser = result.user;
+                console.log(cognitoUser);
+                localStorage.setItem('email', email);
+                window.location.replace('confirm');
+            });
 
+        } else {
+            alert('Passwords do not match.')
+        }
     });
 
 </script>

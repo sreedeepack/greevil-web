@@ -54,45 +54,43 @@
   <!-- Core plugin JavaScript-->
   <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
   <!-- Cognito -->
-  <script src="{%static "js/aws-cognito-sdk.min.js" %}"></script>
-  <script src="{%static "js/amazon-cognito-identity.min.js" %}"></script>
+  <script src="{% static "js/aws-cognito-sdk.min.js" %}"></script>
+  <script src="{% static "js/amazon-cognito-identity.min.js" %}"></script>
 
 
 </body>
 
 <!-- Cognito -->
 <script>
-  var cognitoUserPoolId = "us-east-1_RthhXV3XY";
-  var cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
-   $(document).on('click', '.btn-success', function(event) {
-    event.preventDefault();
+    let cognitoUserPoolId = "{{ cognitoUserPoolId }}";
+    let cognitoUserPoolClientId = "{{ cognitoUserPoolClientId }}";
+    $(document).on('click', '.btn-success', function (event) {
+        event.preventDefault();
 
-    var confirmCode = document.getElementById('confirmCode').value;
+        let confirmCode = document.getElementById('confirmCode').value;
 
-    var poolData = {
-      UserPoolId : cognitoUserPoolId,
-      ClientId : cognitoUserPoolClientId
-    };
+        let poolData = {
+            UserPoolId: cognitoUserPoolId,
+            ClientId: cognitoUserPoolClientId
+        };
 
-    var userName = localStorage.getItem('email');
+        let userName = localStorage.getItem('email');
 
-    var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-    var userData = {
-        Username : userName,
-        Pool : userPool
-    };
+        let userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        let userData = {
+            Username: userName,
+            Pool: userPool
+        };
 
-    var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-    cognitoUser.confirmRegistration(confirmCode, true, function(err, result) {
-        if (err) {
-            alert(err.message);
-            return;
-        }
-        else
-        {
-          window.location.replace("/greevil/login");
-        }
-        window.location.replace("/greevil/login");
+        let cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+        cognitoUser.confirmRegistration(confirmCode, true, function (err, result) {
+            if (err) {
+                alert(err.message);
+                return;
+            } else {
+                window.location.replace("/greevil/login");
+            }
+            window.location.replace("/greevil/login");
 
     });
 

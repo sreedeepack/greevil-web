@@ -17,8 +17,8 @@
 
   <!-- Custom styles for this template-->
   <link href="{% static "css/sb-admin.css" %}" rel="stylesheet">
-
 </head>
+
 
 <body class="bg-dark">
 
@@ -39,23 +39,35 @@
               <label for="inputPassword">Password</label>
             </div>
           </div>
-          <div class="form-group">
+          <!-- <div class="form-group">
             <div class="checkbox">
               <label>
                 <input type="checkbox" value="remember-me">
                 Remember Password
               </label>
             </div>
-          </div>
-          
-          <input type="submit" class="btn btn-block btn-primary" value="Login">
-          
+          </div> -->
+
+            <input type="submit" class="btn btn-block btn-primary" value="Login">
+
         </form>
-        <div class="text-center">
-          <a class="d-block small mt-3" href="{% url "sb_admin_register" %}">Register an Account</a>
-          <a class="d-block small" href="{% url "sb_admin_forgot_password" %}">Forgot Password?</a>
-        </div>
+          <div class="text-center">
+              <a class="d-block small mt-3" href="{% url "sb_admin_register" %}">Register an Account</a>
+              <a class="d-block small" href="{% url "sb_admin_forgot_password" %}">Forgot Password?</a>
+          </div>
       </div>
+    </div>
+
+      <!-- Loading indicator -->
+      {#Loading#}
+      <div id="spinner-pulse" class="loadingio-spinner-pulse center-block" style="width: 100%; height: 100%; background-color: black;">
+        <div class="ldio" style="position: absolute; top: 50%;
+        left: 50%;
+        margin: -25px 0 0 -25px;">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
     </div>
   </div>
 
@@ -66,175 +78,94 @@
   <!-- Core plugin JavaScript-->
   <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
   <!-- Cognito -->
-  <script src="{%static "js/aws-cognito-sdk.min.js" %}"></script>
-  <script src="{%static "js/amazon-cognito-identity.min.js" %}"></script>
+  <script src="{% static "js/aws-cognito-sdk.min.js" %}"></script>
+  <script src="{% static "js/amazon-cognito-identity.min.js" %}"></script>
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.135.0.min.js"></script>
 
 </body>
 
 <!-- Cognito -->
 <script>
-    
-  var cognitoUserPoolId = "us-east-1_RthhXV3XY";
-  var cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
-  var awsRegion = 'us-east-1';
-  initializeStorage();
+    var cognitoUserPoolId = "{{ cognitoUserPoolId }} ";//"us-east-1_RthhXV3XY";
+    var cognitoUserPoolClientId = "{{ cognitoUserPoolClientId }}";//"20piadmcfn4hkt62oipkq5matk";
+    var awsRegion = "{{ awsRegion }}";//'us-east-1';
 
-  var configString = localStorage.getItem("awsConfig");
-  var config = JSON.parse(configString);
-  if(config != null) {
-    refreshAWSCredentials();
-    loggedInDisplay();
-  }
+    console.log(awsRegion)
+    initializeStorage();
 
-  function loggedInDisplay() {
-    // $("#loginModal").modal("hide");
-    // $("#logInButton").addClass("d-none");
-    // $("#logOutButton").removeClass("d-none");
-    $.ajax({
-        type:'POST',
-        url:'/greevil/start/', 
-        data: {"id":localStorage.getItem("email")},
-        success:function(response) {
-          // $("#emailNavBar").html(localStorage.getItem("email"));
-          alert("Welcome Back!");
-          window.location.replace("/greevil/dashboard")
-
-          // alert(response["Result"])
-          // window.location.reload();
-        }
-    });
-  }
-
-  
-  function initializeStorage() {
-    var identityPoolId = cognitoUserPoolId;//
-    var userPoolId = cognitoUserPoolId; //
-    var clientId = cognitoUserPoolClientId;//
-    var loginPrefix = 'cognito-idp.' + awsRegion + '.amazonaws.com/' + identityPoolId;
-
-    localStorage.setItem('identityPoolId', identityPoolId);
-    localStorage.setItem('userPoolId', userPoolId);
-    localStorage.setItem('clientId', clientId);
-    localStorage.setItem('loginPrefix', loginPrefix);
-  }
-
-
-  $(document).on('click', '#logOutButton', function(event) {
-    localStorage.clear();
-    document.location.reload();
-  });
-
-
-    function loginUser() {
-
-      var userPoolId = localStorage.getItem('userPoolId');
-      var clientId = localStorage.getItem('clientId');
-      var identityPoolId = localStorage.getItem('identityPoolId');
-      var loginPrefix = localStorage.getItem('loginPrefix');
-
-      var poolData = {
-        UserPoolId : userPoolId, // Your user pool id here
-        ClientId : clientId // Your client id here
-      };
-      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-
-      var email = document.getElementById('inputEmail').value;
-      var pwd = document.getElementById('inputPassword').value;
-
-      var authenticationData =
-      {
-        'UserName': email,
-        'Password': pwd
-      }
-      var userData = {
-        Username : email,
-        Pool : userPool
-      };
-
-      var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
-      var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-      cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: function (result) {
-          console.log('access token + \n' + result.getAccessToken().getJwtToken());
-
-          var sessionTokens =
-          {
-            IdToken: result.getIdToken(),
-            AccessToken: result.getAccessToken(),
-            RefreshToken: result.getRefreshToken()
-          };
-          localStorage.setItem('sessionTokens', JSON.stringify(sessionTokens));
-
-          //POTENTIAL: Region needs to be set if not already set previously elsewhere.
-          AWS.config.region =  awsRegion; 
-
-          AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId : identityPoolId, // your identity pool id here
-            Logins : { 
-              // Change the key below according to the specific region your user pool is in.
-               loginPrefix : sessionTokens.IdToken.jwtToken
-            }
-          });
-
-          localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
-          localStorage.setItem('email', email);
-
-          cognitoUser.getUserAttributes(function(err, result) {
-            if (err) {
-                // alert(err);
-                return;
-            }
-            for (i = 0; i < result.length; i++) {
-                console.log('attribute ' + result[i].getName() + ' has value ' + result[i].getValue());
-                if (result[i].getName() == 'sub') {
-                  console.log('Overwriting userId into local storage');
-                  localStorage.setItem('userId', result[i].getValue());
-                }
-            }
-          });
-
-          loggedInDisplay();
-        },
-
-        onFailure: function(err) {
-          alert(err.message);
-        },
-
-      });
+    var configString = localStorage.getItem("awsConfig");
+    var config = JSON.parse(configString);
+    if (config != null) {
+        refreshAWSCredentials();
+        loggedInDisplay();
     }
+
+    function loggedInDisplay() {
+        $.ajax({
+            type: 'POST',
+            url: '/greevil/start/',
+            data: {"id": localStorage.getItem("email")},
+            success: function (response) {
+                alert("Welcome Back!");
+                $("#spinner-pulse").show();
+                window.location.replace("/greevil/dashboard")
+            }
+        });
+    }
+
+
+    function initializeStorage() {
+        var identityPoolId = cognitoUserPoolId;//
+        var userPoolId = cognitoUserPoolId; //
+        var clientId = cognitoUserPoolClientId;//
+        var loginPrefix = 'cognito-idp.' + awsRegion + '.amazonaws.com/' + identityPoolId;
+
+        localStorage.setItem('identityPoolId', identityPoolId);
+        localStorage.setItem('userPoolId', userPoolId);
+        localStorage.setItem('clientId', clientId);
+        localStorage.setItem('loginPrefix', loginPrefix);
+    }
+
+
+    $(document).on('click', '#logOutButton', function (event) {
+
+        localStorage.clear();
+        document.location.reload();
+
+    });
+
 
     function refreshAWSCredentials() {
 
-      var userPoolId = localStorage.getItem('userPoolId');
-      var clientId = localStorage.getItem('clientId');
-      var identityPoolId = localStorage.getItem('identityPoolId');
-      var loginPrefix = localStorage.getItem('loginPrefix');
+        var userPoolId = localStorage.getItem('userPoolId');
+        var clientId = localStorage.getItem('clientId');
+        let identityPoolId = localStorage.getItem('identityPoolId');
+        var loginPrefix = localStorage.getItem('loginPrefix');
 
-      var poolData = {
-        UserPoolId : userPoolId, // Your user pool id here
-        ClientId : clientId // Your client id here
-      };
-      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-      var cognitoUser = userPool.getCurrentUser();
 
-      if (cognitoUser != null) {
-            cognitoUser.getSession(function(err, result) {
+        var poolData = {
+            UserPoolId: userPoolId, // Your user pool id here
+            ClientId: clientId // Your client id here
+        };
+        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        var cognitoUser = userPool.getCurrentUser();
+
+        if (cognitoUser != null) {
+            cognitoUser.getSession(function (err, result) {
                 if (result) {
                     console.log('You are now logged in.');
-                    cognitoUser.refreshSession(result.getRefreshToken(), function(err, result) {
+                    cognitoUser.refreshSession(result.getRefreshToken(), function (err, result) {
 
                         if (err) {//throw err;
-                            console.log('In the err: '+err);
-                        }
-                        else{
+                            console.log('In the err: ' + err);
+                        } else {
                             localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
                             var sessionTokens =
-                            {
-                              IdToken: result.getIdToken(),
-                              AccessToken: result.getAccessToken(),
-                              RefreshToken: result.getRefreshToken()
-                            };
+                                {
+                                    IdToken: result.getIdToken(),
+                                    AccessToken: result.getAccessToken(),
+                                    RefreshToken: result.getRefreshToken()
+                                };
                             localStorage.setItem("sessionTokens", JSON.stringify(sessionTokens));
 
                         }
@@ -247,13 +178,75 @@
 
     }
 
-    $("#loginForm").submit(function(event) {
-      event.preventDefault();
-      loginUser();
-      
+
+    $("#loginForm").submit(function (event) {
+        event.preventDefault();
+        {#loginUser();#}
+        loginTestUser();
+
+
     });
 
-    
+    function loginTestUser() {
+
+        $("#spinner-pulse").show();
+
+        var email = document.getElementById('inputEmail').value;
+        var pwd = document.getElementById('inputPassword').value;
+
+        localStorage.setItem('email', email);
+        $.ajax({
+            type: "POST",
+            //TODO change/pass from settings
+            url: "{{ APP_SERVER }}/cognito/login/",
+            data: JSON.stringify({'email': email, 'password': pwd}),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (response) {
+
+                if (response['status'] === "success") {
+                    localStorage.setItem('email', email);
+                    {#const sessionTokens = response['data'];#}
+
+                    const sessionTokens =
+                        {
+                            IdToken: response['data']['id_token'],
+                            AccessToken: response['data']['access_token'],
+                            RefreshToken: response['data']['refresh_token'],
+                        };
+
+                    localStorage.setItem('sessionTokens', JSON.stringify(sessionTokens));
+
+
+                    AWS.config.region = awsRegion;
+                    let identityPoolId = localStorage.getItem('identityPoolId');
+                    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                        IdentityPoolId: identityPoolId, // your identity pool id here
+                        Logins: {
+                            // Change the key below according to the specific region your user pool is in.
+                            loginPrefix: sessionTokens.IdToken.jwtToken
+                        }
+                    });
+
+                    localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
+
+                    $("#spinner-pulse").hide();
+                    loggedInDisplay();
+
+
+
+                } else {
+                    $("#spinner-pulse").hide();
+                    window.alert("Error - " + response['data'])
+
+                }
+            },
+            error: function (err) {
+                $("#spinner-pulse").hide();
+                window.alert(err);
+            }
+        });
+    }
 
 </script>
 

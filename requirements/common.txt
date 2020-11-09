@@ -4,3 +4,5 @@ pandas
 boto3
 boto
 botocore
+requests
+warrant

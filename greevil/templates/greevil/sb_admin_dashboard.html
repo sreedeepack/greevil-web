@@ -1,18 +1,22 @@
-{% extends "greevil/base.html" %}{% load static %}{% block sb_admin_title %}Dashboard{% endblock sb_admin_title %}
+{% extends "greevil/base.html" %}
+{% load static %}{% block sb_admin_title %}Dashboard{% endblock sb_admin_title %}
 {% block sb_admin_subheading %}<small>Statistics Overview</small>{% endblock sb_admin_subheading %}
 {% block sb_admin_breadcrumb_active %}
- <li class="breadcrumb-item active">
-      <i class="fa fa-bar-chart-o""></i> Dashboard
- </li>{% endblock sb_admin_breadcrumb_active %}
+    <li class="breadcrumb-item active">
+        <i class="fa fa-bar-chart-o"></i> Dashboard
+    </li>{% endblock sb_admin_breadcrumb_active %}
 {% block sb_admin_content %}
-
-
-
-   
-
-        <!-- Icon Cards-->
-        <div class="row">
-          <div class="col-xl-3 col-sm-6 mb-3">
+<script>
+  function makeNavTitleActive (id){
+    document.getElementById(id).className="nav-item active";
+  }
+  window.onload = function (){
+    makeNavTitleActive("Dashboard-nav-item")    
+  }
+</script>
+    <!-- Icon Cards-->
+    <div class="row">
+        <div class="col-xl-3 col-sm-6 mb-3">
             <div class="card text-white bg-primary o-hidden h-100">
               <div class="card-body">
                 <div class="card-body-icon">
@@ -101,53 +105,53 @@
                     <tr>
                       <th>Date</th>
                       <th>Description</th>
-                      <th>Amount</th>
-                      <th>Paid By</th>
-                      <th>Paid For</th>
-                      <th>Comments</th>
+                        <th>Amount</th>
+                        <th>Paid By</th>
+                        <th>Paid For</th>
+                        <th>Comments</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    
+                    <tbody>
+
                     {% for expense in expenses %}
-                      <tr>
-                      <td>{{ expense.Date }}</td>
-                      <td>{{ expense.Description }}</td>
-                      <td>{{ expense.Amount }}</td>
-                      <td>{{ expense.By }}</td>
-                      <td>{{ expense.For }}</td>
-                      <td>{{ expense.Comments }}</td>
-                      </tr>       
+                        <tr>
+                            <td>{{ expense.date }}</td>
+                            <td>{{ expense.description }}</td>
+                            <td>{{ expense.amount }}</td>
+                            <td>{{ expense.payor }}</td>
+                            <td>{{ expense.user_id }}</td>
+                            <td>{{ expense.comments }}</td>
+                        </tr>
                     {% endfor %}
-  
-                    
-                  </tbody>
+
+
+                    </tbody>
                 </table>
               </div>
             </div>
           </div>
-  
-<!-- /.row -->
 
-<!-- /.row -->
+    <!-- /.row -->
+
+    <!-- /.row -->
 {% endblock sb_admin_content %}
 {% block sb_admin_custom_js %}
     <!--Variables for chart  -->
     {{area_chart|json_script:"area_chart_data"}}
     <script>
-      monthly_expense_label = "Money Spent: ";
-      var data = document.getElementById('area_chart_data').textContent;
-      data = JSON.parse(data);
-      x_labels = Object.keys(data); 
-      y_data = [];
-      var arrayLength = x_labels.length;
-      max_y = 0;
-      for (var i = 0; i < arrayLength; i++) {
-        y_data[i] = data[x_labels[i]];
-        if(max_y<y_data[i]){
-          max_y = y_data[i]
+        monthly_expense_label = "Money Spent: ";
+        var data = document.getElementById('area_chart_data').textContent;
+        data = JSON.parse(data);
+        x_labels = Object.keys(data);
+        y_data = [];
+        var arrayLength = x_labels.length;
+        max_y = 0;
+        for (var i = 0; i < arrayLength; i++) {
+            y_data[i] = data[x_labels[i]];
+            if (max_y < y_data[i]) {
+                max_y = y_data[i]
+            }
         }
-      }
     </script>
 
     <!-- Morris Charts JavaScript -->

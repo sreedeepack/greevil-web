@@ -1,14 +1,16 @@
-{% load static %}<!DOCTYPE html>
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="{% block sb_admin_description %}{% endblock sb_admin_description %}">
-  <meta name="author" content="{% block sb_admin_author %}{% endblock %}">
-  <title>{% block title %}Greevil Dashboard{% endblock %}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{% block sb_admin_description %}{% endblock sb_admin_description %}">
+    <meta name="author" content="{% block sb_admin_author %}{% endblock %}">
+    <title>{% block title %}Greevil Dashboard{% endblock %}</title>
 
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
   <!-- Custom fonts for this template-->
   <link href="{% static "vendor/fontawesome-free/css/all.min.css"  %}" rel="stylesheet" type="text/css">
@@ -27,9 +29,16 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
   <![endif]-->
   {% block sb_admin_custom_css %}{% endblock sb_admin_custom_css %}
-</head>
 
+</head>
+<script>
+    // window.onload = function (){
+    // console.log("1")
+    // localStorage.setItem("navBarToggle","false")
+    // }
+</script>
 <body id="page-top">
+
 <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
   <a class="navbar-brand" href="{% block sb_admin_header_url %}{% url "sb_admin_start" %}{% endblock sb_admin_header_url %}">{% block sb_admin_header %}Greevil{% endblock sb_admin_header %}</a>
 
@@ -38,18 +47,18 @@
   <!-- Navbar Search -->
   <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
     <div class="input-group">
-      <input type="text" class="form-control" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+      <!-- <input type="text" class="form-control" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
       <div class="input-group-append">
         <button class="btn btn-primary" type="button">
           <i class="fas fa-search"></i>
         </button>
-      </div>
+      </div> -->
     </div>
   </form>
 
   <!-- Navbar -->
   <ul class="navbar-nav ml-auto ml-md-0">
-    
+
     <li class="nav-item dropdown no-arrow">
       <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="fas fa-user-circle fa-fw"></i>
@@ -57,87 +66,83 @@
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
         <!-- <a class="dropdown-item" href="#">Settings</a> -->
         <a class="dropdown-item" id="emailNavBar" href="#">
-        
+
         </a>
         <div class="dropdown-divider"></div>
-        <!-- <button type="button" id="logInButton" class="btn btn-light">Log In / Register</button> -->
-        <!-- <button type="button" id="logOutButton" class="btn btn-light d-none">Log Out</button> -->
-        <!-- <a class="dropdown-item" href="#" id="logOutButton">Log in/Sign up</a> -->
-        <a class="dropdown-item" href="#" id="logOutButton">Logout</a>
+          <!-- <button type="button" id="logInButton" class="btn btn-light">Log In / Register</button> -->
+          <!-- <button type="button" id="logOutButton" class="btn btn-light d-none">Log Out</button> -->
+          <!-- <a class="dropdown-item" href="#" id="logOutButton">Log in/Sign up</a> -->
+          <a class="dropdown-item" href="#" id="logOutButton">Logout</a>
 
       </div>
     </li>
   </ul>
   {% endblock sb_admin_navbar_right %}
 </nav>
+
+
 <div id="wrapper"><!-- wrapper -->
-  <!-- Sidebar -->
-  <ul class="sidebar navbar-nav">
-    {% block sb_admin_sidebar %}
-    <li class="nav-item active">
-      <a class="nav-link" href="{% url "sb_admin_dashboard" %}">
-        <i class="fas fa-fw fa-tachometer-alt"></i>
-        <span>Dashboard</span>
-      </a>
-    </li>
 
+    <!-- Sidebar -->
+    <ul class="sidebar navbar-nav" id="sidebarData">
+        {% block sb_admin_sidebar %}
+            <li class="nav-item" id="Dashboard-nav-item">
+                <a class="nav-link" href="{% url "sb_admin_dashboard" %}" onclick='$("#spinner-pulse").show();'>
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
 
-    <!-- <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fas fa-fw fa-folder"></i>
-        <span>Pages</span>
-      </a>
-      <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-        <h6 class="dropdown-header">Login Screens:</h6>
-        <a class="dropdown-item" href="{% url "sb_admin_login" %}">Login</a>
-        <a class="dropdown-item" href="{% url "sb_admin_register" %}">Register</a>
-        <a class="dropdown-item" href="{% url "sb_admin_forgot_password" %}">Forgot Password</a>
-        <div class="dropdown-divider"></div>
-        <h6 class="dropdown-header">Other Pages:</h6>
-        <a class="dropdown-item" href="{% url "sb_admin_404" %}">404 Page</a>
-        <a class="dropdown-item" href="{% url "sb_admin_blank" %}">Add Expenses/Contacts</a>
-      </div>
-    </li>
-     -->
+            <li class="nav-item" id="Add-Expense-nav-item">
+                <a class="nav-link" href="{% url "sb_admin_add_exp" %}" onclick='$("#spinner-pulse").show();'>
+                    <i class="fas fa-fw fa-plus"></i>
+                    <span>Add Expenses</span></a>
+            </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="{% url "sb_admin_blank" %}">
-        <i class="fas fa-fw fa-plus"></i>
-        <span>Add Expenses</span></a>
-    </li>
-    
-    <li class="nav-item">
-      <a class="nav-link" href="{% url "sb_admin_charts" %}">
-        <i class="fas fa-fw fa-chart-area"></i>
-        <span>Charts</span></a>
-    </li>
+            <li class="nav-item" id="Charts-nav-item">
+                <a class="nav-link" href="{% url "sb_admin_charts" %}" onclick='$("#spinner-pulse").show();'>
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Charts</span></a>
+            </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="{% url "sb_admin_blank" %}">
-        <i class="fas fa-fw fa-user-plus"></i>
-        <span>Add Contacts</span></a>
-    </li>
+            <li class="nav-item" id="Add-contacts-nav-item">
+                <a class="nav-link" href="{% url "sb_admin_add" %}" onclick='$("#spinner-pulse").show();'>
+                    <i class="fas fa-fw fa-user-plus"></i>
+                    <span>Add Contacts</span></a>
+            </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="{% url "sb_admin_tables" %}">
-        <i class="fas fa-fw fa-table"></i>
-        <span>Manage Expenses</span></a>
-    </li>
-    {% endblock sb_admin_sidebar %}
-  </ul>
-  <div id="content-wrapper"><!-- content wrapper -->
-    <div class="container-fluid"><!-- cfluid -->
-  {# <div id="page-wrapper"> #}
-  {# <div class="container-fluid"> #}
-      <!-- Page Heading -->
+            <li class="nav-item" id="Manage-expenses-nav-item">
+                <a class="nav-link" href="{% url "sb_admin_tables" %}" onclick='$("#spinner-pulse").show();'>
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Manage Expenses</span></a>
+            </li>
+        {% endblock sb_admin_sidebar %}
+    </ul>
+    <div id="content-wrapper"><!-- content wrapper -->
+        <div class="container-fluid"><!-- cfluid -->
 
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          {% block sb_admin_breadcrumb %}<i class="fa fa-dashboard"></i>  <a href="{% url "sb_admin_start" %}">Greevil Home</a>{% endblock sb_admin_breadcrumb %}
-        </li>
-        {% block sb_admin_breadcrumb_active %}
-        {% endblock sb_admin_breadcrumb_active %}
-      </ol>
+            <!-- Loading indicator -->
+            {#Loading#}
+            <div id="spinner-pulse" class="loadingio-spinner-pulse center-block" style="width: 100%; height: 100%; background-color: black;">
+                <div class="ldio" style="position: absolute; top: 50%;
+                left: 50%;
+                margin: -25px 0 0 -25px;">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
+            <!-- Page Heading -->
+
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    {% block sb_admin_breadcrumb %}<i class="fa fa-dashboard"></i>
+                        <a href="{% url "sb_admin_start" %}">Greevil Home</a>{% endblock sb_admin_breadcrumb %}
+                </li>
+                {% block sb_admin_breadcrumb_active %}
+                {% endblock sb_admin_breadcrumb_active %}
+            </ol>
       {% block sb_admin_content %}
       <div class="alert alert-secondary alert-dismissable show">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -151,23 +156,29 @@
         <li>original project page</li>
       </ul>
 
-  {# {% include "greevil/login.html" %}                #}
-  {% endblock sb_admin_content %}
-    </div><!-- cfluid -->
-  </div><!-- content wrapper -->
-  <!-- Sticky Footer -->
-  <footer class="sticky-footer">
-    <div class="container my-auto">
-      <div class="copyright text-center my-auto">
-        <span>{% block sb_admin_copyright %}By Aquil{% endblock sb_admin_copyright %}</span>
-      </div>
-    </div>
-  </footer>
+      {% endblock sb_admin_content %}
+        </div><!-- cfluid -->
+    </div><!-- content wrapper -->
+
+    <!-- Sticky Footer -->
+    <footer class="sticky-footer">
+        <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+                <span>
+                    {% block sb_admin_copyright %}
+                        By
+                        <a href="https://github.com/Acquil"> Aquil</a>
+                        <a href="https://github.com/sreedeepack">Deepack</a>
+                    {% endblock sb_admin_copyright %}
+                </span>
+            </div>
+        </div>
+    </footer>
 
 </div><!-- wrapper end -->
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
-  <i class="fas fa-angle-up"></i>
+    <i class="fas fa-angle-up"></i>
 </a>
 
 <!-- jQuery -->
@@ -196,8 +207,8 @@
 
 
 <!-- Cognito -->
-<script src="{% static "js/aws-cognito-sdk.min.js"%}"></script>
-<script src="{% static "js/amazon-cognito-identity.min.js"%}"></script>
+<script src="{% static "js/aws-cognito-sdk.min.js" %}"></script>
+<script src="{% static "js/amazon-cognito-identity.min.js" %}"></script>
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.135.0.min.js"></script>
 
 </body>
@@ -205,72 +216,71 @@
 
 <!-- Cognito -->
 <script>
-    
-  var cognitoUserPoolId = "us-east-1_RthhXV3XY";
-  var cognitoUserPoolClientId = "20piadmcfn4hkt62oipkq5matk";
-  var awsRegion = 'us-east-1';
-  initializeStorage();
-
-  var configString = localStorage.getItem("awsConfig");
-  var config = JSON.parse(configString);
-  
-  if(config != null) {
-    refreshAWSCredentials();    
-    loggedInDisplay();
-  }
-  else{
-    window.location.replace("/greevil/login")
-  }
-
-  function loggedInDisplay() {
-    // $("#loginModal").modal("hide");
-    $("#logInButton").addClass("d-none");
-    $("#logOutButton").removeClass("d-none");
-  }
-
-  function initializeStorage() {
-    var identityPoolId = cognitoUserPoolId;//
-    var userPoolId = cognitoUserPoolId; //
-    var clientId = cognitoUserPoolClientId;//
-    var loginPrefix = 'cognito-idp.' + awsRegion + '.amazonaws.com/' + identityPoolId;
-
-    localStorage.setItem('identityPoolId', identityPoolId);
-    localStorage.setItem('userPoolId', userPoolId);
-    localStorage.setItem('clientId', clientId);
-    localStorage.setItem('loginPrefix', loginPrefix);
-  }
 
 
-  $(document).on('click', '#logOutButton', function(event) {
-    localStorage.clear();
-    document.location.reload();
-  });
+    let cognitoUserPoolId = "{{ cognitoUserPoolId }}";
+    let cognitoUserPoolClientId = "{{ cognitoUserPoolClientId }}";
+    let awsRegion = '{{ awsRegion }}';
+    initializeStorage();
+
+    let configString = localStorage.getItem("awsConfig");
+    let config = JSON.parse(configString);
+
+
+    if (config != null) {
+        refreshAWSCredentials();
+        loggedInDisplay();
+    } else {
+        window.location.replace("/greevil/login")
+    }
+
+    function loggedInDisplay() {
+        $("#logInButton").addClass("d-none");
+        $("#logOutButton").removeClass("d-none");
+    }
+
+    function initializeStorage() {
+        const identityPoolId = cognitoUserPoolId;//
+        const userPoolId = cognitoUserPoolId; //
+        const clientId = cognitoUserPoolClientId;//
+        const loginPrefix = 'cognito-idp.' + awsRegion + '.amazonaws.com/' + identityPoolId;
+
+        localStorage.setItem('identityPoolId', identityPoolId);
+        localStorage.setItem('userPoolId', userPoolId);
+        localStorage.setItem('clientId', clientId);
+        localStorage.setItem('loginPrefix', loginPrefix);
+    }
+
+
+    $(document).on('click', '#logOutButton', function (event) {
+        localStorage.clear();
+        document.location.reload();
+    });
 
 
     function refreshAWSCredentials() {
 
-      var userPoolId = localStorage.getItem('userPoolId');
-      var clientId = localStorage.getItem('clientId');
-      var identityPoolId = localStorage.getItem('identityPoolId');
-      var loginPrefix = localStorage.getItem('loginPrefix');
+        let userPoolId = localStorage.getItem('userPoolId');
+        let clientId = localStorage.getItem('clientId');
+        let identityPoolId = localStorage.getItem('identityPoolId');
+        let loginPrefix = localStorage.getItem('loginPrefix');
 
-      var poolData = {
-        UserPoolId : userPoolId, // Your user pool id here
-        ClientId : clientId // Your client id here
-      };
-      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-      var cognitoUser = userPool.getCurrentUser();
+        let poolData = {
+            UserPoolId: userPoolId, // Your user pool id here
+            ClientId: clientId // Your client id here
+        };
+        let userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        let cognitoUser = userPool.getCurrentUser();
 
-      if (cognitoUser != null) {
-            cognitoUser.getSession(function(err, result) {
+        if (cognitoUser != null) {
+            cognitoUser.getSession(function (err, result) {
                 if (result) {
                     console.log('You are now logged in.');
-                    cognitoUser.refreshSession(result.getRefreshToken(), function(err, result) {
+                    cognitoUser.refreshSession(result.getRefreshToken(), function (err, result) {
 
                         if (err) {//throw err;
-                            console.log('In the err: '+err);
-                        }
-                        else{
+                            console.log('In the err: ' + err);
+                        } else {
                             localStorage.setItem('awsConfig', JSON.stringify(AWS.config));
                             var sessionTokens =
                             {
@@ -287,20 +297,33 @@
             });
         }
     }
-
     
     $.ajax({
-      type:'POST',
-      url:'/greevil/start/', 
-      data: {"id":localStorage.getItem("email")},
-      success:function(response) {
-        $("#emailNavBar").html(localStorage.getItem("email"));
-        // alert(response["Result"])
-        // window.location.reload();
-      }
+        type: 'POST',
+        url: '/greevil/start/',
+        data: {"id": localStorage.getItem("email")},
+        success: function (response) {
+            console.log("base.html ajax success")
+            $("#emailNavBar").html(localStorage.getItem("email"));
+        },
+        error: function (err) {
+            console.log(err)
+        }
     });
-
-    
+    /*
+    $.ajax({
+        type: 'POST',
+        url: '/greevil/start/',
+        data: {"id": localStorage.getItem("email")},
+        dataType: "json",
+        contentType: "application/json",
+        success: function (response) {
+            console.log("base.html ajax success")
+            $("#emailNavBar").html(localStorage.getItem("email"));
+        }
+    });
+    */
 
 </script>
+
 </html>
