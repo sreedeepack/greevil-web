@@ -71,6 +71,7 @@ def start(request):
     request.session['email'] = request.POST.get('id')
     print("Request session success with", request.POST.get('id'))
     print(f"And request.session[email]={request.session['email']}")
+
     return JsonResponse({'Result': 'Success'})
 
 

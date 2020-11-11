@@ -9,7 +9,7 @@ services:
       - /static:/static
     ports:
       - "8000:8000"
-    command: sh -c "./manage.py collectstatic --noinput; gunicorn -w 2 -b 0.0.0.0:8000 ec2django.wsgi;"
+    command: sh -c "./manage.py migrate; ./manage.py collectstatic --noinput; gunicorn -w 2 -b 0.0.0.0:8000 ec2django.wsgi;"
 
   nginx:
     container_name: nginx

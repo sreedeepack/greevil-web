@@ -1,5 +1,8 @@
-import greevil.views
 from django.conf.urls import url
+from django.urls import path
+from django.views.generic import TemplateView
+
+import greevil.views
 
 urlpatterns = [
 
@@ -23,20 +26,17 @@ urlpatterns = [
 
     url(r'^charts/$', greevil.views.charts, name='sb_admin_charts'),
     url(r'^tables/$', greevil.views.tables, name='sb_admin_tables'),
-    url(r'^forms/$', greevil.views.forms, name='sb_admin_forms'),
-    url(r'^bootstrap-elements/$', greevil.views.bootstrap_elements, name='sb_admin_bootstrap_elements'),
-    url(r'^bootstrap-grid/$', greevil.views.bootstrap_grid, name='sb_admin_bootstrap_grid'),
-    url(r'^rtl-dashboard/$', greevil.views.rtl_dashboard, name='sb_admin_rtl_dashboard'),
+    # url(r'^forms/$', greevil.views.forms, name='sb_admin_forms'),
+    # url(r'^bootstrap-elements/$', greevil.views.bootstrap_elements, name='sb_admin_bootstrap_elements'),
+    # url(r'^bootstrap-grid/$', greevil.views.bootstrap_grid, name='sb_admin_bootstrap_grid'),
+    # url(r'^rtl-dashboard/$', greevil.views.rtl_dashboard, name='sb_admin_rtl_dashboard'),
     url(r'^add/$', greevil.views.add, name='sb_admin_add'),
     url(r'^add/expense/$', greevil.views.add_expense_view, name='sb_admin_add_exp'),
 
     url(r"^forgot/$", greevil.views.forgot_view, name='sb_admin_forgot_password'),
     url(r"^forgot/confirm/$", greevil.views.forgot_confirm_view, name='sb_admin_forgot_confirm'),
 
-    # path('forgot/', TemplateView.as_view(
-    #     template_name="greevil/forgot_password.html"),
-    #      name='sb_admin_forgot_password'
-    #      ),
+
     # path('forgot/confirm/', TemplateView.as_view(
     #     template_name="greevil/forgot_confirm.html"),
     #      name='sb_admin_forgot_confirm'
