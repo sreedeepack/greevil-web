@@ -1,5 +1,5 @@
 # dependencies common to all environments
-Django==2.2.13
+Django==3.2.24
 pandas
 boto3
 boto
